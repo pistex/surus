@@ -1,3 +1,9 @@
+# Django #
+db.sqlite3
+django-venv
+media
+static
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
