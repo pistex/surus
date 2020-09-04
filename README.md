@@ -1,17 +1,20 @@
 # surus
 
 ## apps
-### api
-- authentication
 ### user
-- use email to login
-- username changeable
-- profile picture
+[] Allow both email and username login  
+[] Profile picture  
+[] Implement django-allauth  
 ### blog
-- edit history
-- guest comment
-- local comment
-- facebook comment
-- issue report (boolean is_coding)
+[] Edit history  
+[] Tag  
+[] Slug (Auto generate by title)  
+[] Issue Report  
+[] Social Share  
+[] Local comment  
+[] Guest comment  
+[] Facebook comment (create facebook app)  
 ### facebook
-- facebook comment
+[] Facebook comment  
+### api
+[] Authentication method (TBC)  
