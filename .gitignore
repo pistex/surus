@@ -1,8 +1,11 @@
-# Django #
+# Django 
 db.sqlite3
 django-venv
 media
 static
+
+# GCP
+*.pem
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

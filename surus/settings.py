@@ -75,8 +75,18 @@ WSGI_APPLICATION = 'surus.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'surus',
+        'USER': 'postgres',
+        'PASSWORD': 'hAIa5Brfo8b5q3bi',
+        'HOST': '34.87.147.241',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'verify-ca',
+            'sslrootcert': '/home/sbpann/surus/server-ca.pem',
+            "sslcert": "/home/sbpann/surus/client-cert.pem",
+            "sslkey": "/home/sbpann/surus/client-key.pem",
+        }
     }
 }
 

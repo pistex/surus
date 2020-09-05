@@ -1,7 +1,7 @@
 # surus
 
 ## Database
-PostgreSQL
+[x] PostgreSQL
 ## apps
 ### user
 [] Allow both email and username login  
