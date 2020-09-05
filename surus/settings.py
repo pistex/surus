@@ -132,3 +132,4 @@ STATIC_URL = '/static/'
 
 #Custom user model
 AUTH_USER_MODEL = 'user.User'
+AUTHENTICATION_BACKENDS = ['apps.user.authentication.ModelBackend']

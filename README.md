@@ -1,10 +1,10 @@
 # surus
 
 ## Database
-[x] PostgreSQL
+[X] PostgreSQL
 ## apps
 ### user
-[] Allow both email and username login  
+[X] Allow both email and username login  
 [] Profile picture  
 [] Implement django-allauth  
 ### blog
