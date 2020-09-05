@@ -1,5 +1,7 @@
 # surus
 
+## Database
+PostgreSQL
 ## apps
 ### user
 [] Allow both email and username login  
