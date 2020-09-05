@@ -112,7 +112,10 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
             'Unselect this instead of deleting accounts.'
         ),
     )
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now, editable=False)
+    last_login = models.DateTimeField(
+        _('last login'), blank=True, null=True, editable=False)
+
 
     objects = UserManager()
 
