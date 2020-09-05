@@ -7,6 +7,7 @@ from .forms import UserChangeForm, UserCreationForm
 
 class UserAdmin(DjangoUserAdmin):
     fieldsets = (
+        (None, {'fields': ('profile_picture',)}),
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
         (_('Permissions'), {

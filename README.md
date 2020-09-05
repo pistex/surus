@@ -5,7 +5,7 @@
 ## apps
 ### user
 [X] Allow both email and username login  
-[] Profile picture  
+[X] Profile picture  
 [] Implement django-allauth  
 ### blog
 [] Edit history  

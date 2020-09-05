@@ -115,6 +115,8 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now, editable=False)
     last_login = models.DateTimeField(
         _('last login'), blank=True, null=True, editable=False)
+    profile_picture = models.ImageField(
+        upload_to='profile_pic', default='default_profile_picture.png')
 
 
     objects = UserManager()
