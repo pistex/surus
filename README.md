@@ -17,4 +17,4 @@
 ### facebook
 [] Facebook comment  
 ### api
-[] Authentication method (TBC)  
+[] Implement dj-rest-auth
