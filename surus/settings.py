@@ -151,3 +151,6 @@ SITE_ID = 1
 # blog app
 INSTALLED_APPS += ['simple_history', 'apps.blog']
 MIDDLEWARE += ['simple_history.middleware.HistoryRequestMiddleware']
+
+# api
+INSTALLED_APPS += ['rest_framework', 'apps.api']

@@ -23,7 +23,7 @@ class Body(models.Model):
         return self.en
 
 class Tag(models.Model):
-    en = models.CharField(max_length=16)
+    en = models.CharField(max_length=16,)
     th = models.CharField(max_length=16, blank=True)
 
     def __str__(self):
@@ -37,14 +37,15 @@ class Blog(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
     reason = models.CharField(max_length=100, blank=True)
-    tag = models.ManyToManyField(Tag)
+    tag = models.ManyToManyField(Tag, blank=True, default=None)
     history = HistoricalRecords()
 
     def __str__(self):
         return self.title.en
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title.en)
+        if self.title:
+            self.slug = slugify(self.title.en)
         if self.pk == None:
             self.reason = "created"
         if self.pk != None and self.reason == ("created" or "no change reason"):
