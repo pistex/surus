@@ -8,9 +8,10 @@
 [X] Profile picture  
 [X] Implement django-allauth  
 ### blog
-[] Edit history  
-[] Tag  
-[] Slug (Auto generate by title)  
+[X] TH/EN title and content
+[X] Slug (Auto generate by title)  
+[X] Edit history  
+[] Tag
 [] Issue Report  
 [] Social Share  
 [] Local comment  

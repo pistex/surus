@@ -147,3 +147,7 @@ INSTALLED_APPS += [
 AUTHENTICATION_BACKENDS += ['allauth.account.auth_backends.AuthenticationBackend']
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SITE_ID = 1
+
+# blog app
+INSTALLED_APPS += ['simple_history', 'apps.blog']
+MIDDLEWARE += ['simple_history.middleware.HistoryRequestMiddleware']
