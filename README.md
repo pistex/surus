@@ -17,4 +17,7 @@
 [X] Local comment  
 [X] Guest comment  
 ### api
+[] Create CRUD endpoint for blog
+[] Create CRUD endpoint for comment
+[] Create CRUD endpoint for reply
 [] Implement dj-rest-auth
