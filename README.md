@@ -16,9 +16,5 @@
 [X] Tooltip
 [X] Local comment
 [X] Guest comment
-[] Social Share  
-[] Facebook comment (create facebook app)  
-### facebook
-[] Facebook comment  
 ### api
 [] Implement dj-rest-auth
