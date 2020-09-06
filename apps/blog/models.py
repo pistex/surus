@@ -6,7 +6,6 @@ from simple_history.utils import update_change_reason
 
 # Create your models here.
 
-
 class Title(models.Model):
     en = models.CharField(max_length=100)
     th = models.CharField(max_length=100, blank=True)
@@ -59,3 +58,37 @@ class Blog(models.Model):
         super().delete(*args, **kwargs)
         this_title.delete()
         this_body.delete()
+
+class Issue(models.Model):
+    blog = models.ForeignKey(Blog, default=None, on_delete=models.SET_DEFAULT)
+    title = models.CharField(max_length=100)
+    body = models.TextField()
+    user = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
+
+    def __str__(self):
+        return self.blog
+
+class Comment(models.Model):
+    body = models.TextField()
+    blog = models.ForeignKey(Blog, default=None, on_delete=models.SET_DEFAULT)
+    user = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
+
+    def __str__(self):
+        return self.user + ": " + self.body + self.blog
+
+class Reply(models.Model):
+    body = models.TextField()
+    comment = models.ForeignKey(Comment, default=None, on_delete=models.SET_DEFAULT)
+    user = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
+
+    def __str__(self):
+        return self.user + ": " + self.body + self.blog
+
+
+class Tooltip(models.Model):
+    title = models.CharField(max_length=100)
+    body = models.TextField()
+    tag = models.ManyToManyField(Tag)
+
+    def __str__(self):
+        return self.title

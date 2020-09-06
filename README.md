@@ -12,10 +12,11 @@
 [X] Slug (Auto generate by title)  
 [X] Edit history  
 [X] Tag
-[] Issue Report  
+[X] Issue Report 
+[X] Tooltip
+[X] Local comment
+[X] Guest comment
 [] Social Share  
-[] Local comment  
-[] Guest comment  
 [] Facebook comment (create facebook app)  
 ### facebook
 [] Facebook comment  
