@@ -6,7 +6,7 @@
 ### user
 [X] Allow both email and username login  
 [X] Profile picture  
-[] Implement django-allauth  
+[X] Implement django-allauth  
 ### blog
 [] Edit history  
 [] Tag  
