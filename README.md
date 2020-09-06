@@ -11,7 +11,7 @@
 [X] TH/EN title and content
 [X] Slug (Auto generate by title)  
 [X] Edit history  
-[] Tag
+[X] Tag
 [] Issue Report  
 [] Social Share  
 [] Local comment  

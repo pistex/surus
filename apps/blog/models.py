@@ -23,6 +23,13 @@ class Body(models.Model):
     def __str__(self):
         return self.en
 
+class Tag(models.Model):
+    en = models.CharField(max_length=16)
+    th = models.CharField(max_length=16, blank=True)
+
+    def __str__(self):
+        return self.en
+    
 class Blog(models.Model):
     title = models.OneToOneField(Title, on_delete=models.RESTRICT)
     body = models.OneToOneField(Body, on_delete=models.RESTRICT)
@@ -30,8 +37,9 @@ class Blog(models.Model):
     thumbmail = models.ImageField(default='default_thumbmail.png', blank=True)
     date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
-    history = HistoricalRecords()
     reason = models.CharField(max_length=100, blank=True)
+    tag = models.ManyToManyField(Tag)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.title.en
