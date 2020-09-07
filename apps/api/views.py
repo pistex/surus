@@ -1,9 +1,9 @@
 import pprint
 from django.http import HttpResponse
-from rest_framework import viewsets
-from apps.blog.models import Blog, Comment
-from apps.blog.serializers import BlogSerializer, CommentSerializer
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import viewsets
+from apps.blog.models import Blog, Comment, Reply
+from apps.blog.serializers import BlogSerializer, CommentSerializer, ReplySerializer
 
 
 @csrf_exempt
@@ -20,3 +20,7 @@ class BlogAPIView(viewsets.ModelViewSet):
 class CommentAPIView(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+class ReplyAPIView(viewsets.ModelViewSet):
+    queryset = Reply.objects.all()
+    serializer_class = ReplySerializer

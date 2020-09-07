@@ -132,7 +132,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = '/home/sbpann/surus/media/'
 
 # Custom user model
-INSTALLED_APPS += ['apps.user']
+INSTALLED_APPS += ['apps.user.apps.UserConfig']
 AUTH_USER_MODEL = 'user.User'
 AUTHENTICATION_BACKENDS = ['apps.user.authentication.ModelBackend']
 
@@ -149,8 +149,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SITE_ID = 1
 
 # blog app
-INSTALLED_APPS += ['simple_history', 'apps.blog']
+INSTALLED_APPS += ['simple_history', 'apps.blog.apps.BlogConfig']
 MIDDLEWARE += ['simple_history.middleware.HistoryRequestMiddleware']
 
 # api
-INSTALLED_APPS += ['rest_framework', 'apps.api']
+INSTALLED_APPS += ['rest_framework', 'apps.api.apps.ApiConfig']

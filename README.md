@@ -18,6 +18,6 @@
 [X] Guest comment  
 ### api
 [X] Create CRUD endpoint for blog
-[] Create CRUD endpoint for comment
-[] Create CRUD endpoint for reply
+[X] Create CRUD endpoint for comment
+[X] Create CRUD endpoint for reply
 [] Implement dj-rest-auth

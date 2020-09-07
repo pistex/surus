@@ -76,7 +76,7 @@ class Issue(models.Model):
 class Comment(models.Model):
     body = models.TextField(blank=False)
     blog = models.ForeignKey(Blog, default=None, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
+    user = models.ForeignKey(User, default=None, null=True, on_delete=models.SET_DEFAULT)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -84,7 +84,7 @@ class Comment(models.Model):
 class Reply(models.Model):
     body = models.TextField()
     comment = models.ForeignKey(Comment, default=None, on_delete=models.SET_DEFAULT)
-    user = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
+    user = models.ForeignKey(User, default=None, null=True, on_delete=models.SET_DEFAULT)
     history = HistoricalRecords()
 
     def __str__(self):
