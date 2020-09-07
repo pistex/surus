@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'surus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'surus',
+        'NAME': 'surus-alpha',
         'USER': 'postgres',
         'PASSWORD': 'hAIa5Brfo8b5q3bi',
         'HOST': '34.87.147.241',

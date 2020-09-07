@@ -2,6 +2,7 @@
 Create custom user model inheritate from native Django's user model.
 """
 from django.apps import apps
+from django.contrib import auth
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import PermissionsMixin
@@ -51,7 +52,7 @@ class UserManager(BaseUserManager):
 
     def with_perm(self, perm, is_active=True, include_superusers=True, backend=None, obj=None):
         if backend is None:
-            backends = auth._get_backends(return_tuples=True)
+            backends = auth.get_backends()
             if len(backends) == 1:
                 backend, _ = backends[0]
             else:

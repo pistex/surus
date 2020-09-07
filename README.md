@@ -9,15 +9,15 @@
 [X] Implement django-allauth  
 ### blog
 [X] TH/EN title and content
-[] Slug (Auto generate by title)  
-[] Edit history  
+[x] Slug (Auto generate by title)  
+[x] Edit history  
 [X] Tag  
 [X] Issue Report  
 [X] Tooltip  
 [X] Local comment  
 [X] Guest comment  
 ### api
-[] Create CRUD endpoint for blog
+[X] Create CRUD endpoint for blog
 [] Create CRUD endpoint for comment
 [] Create CRUD endpoint for reply
 [] Implement dj-rest-auth

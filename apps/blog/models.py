@@ -1,11 +1,10 @@
 from django.db import models
-# from django.utils.text import slugify
-import django.contrib.auth
+from django.contrib import auth
+from django.utils.text import slugify
 from simple_history.models import HistoricalRecords
-# from simple_history.utils import update_change_reason
+from simple_history.utils import update_change_reason
 
-# Create your models here.
-User = django.contrib.auth.get_user_model()
+User = auth.get_user_model()
 class Title(models.Model):
     en = models.CharField(max_length=100)
     th = models.CharField(max_length=100, blank=True)
@@ -44,8 +43,17 @@ class Blog(models.Model):
         return str(self.id) + ": " + self.title.en
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        print("Save model delete method is called.")
+        print("Save model save method is called.")
+        if self.title:
+            self.slug = slugify(self.title.en)
+        if self.id is None:
+            self.reason = "created"
+        print(self.reason == "")
+        if (self.id is not None) and (self.reason == "created" or "no change reason" or ""):
+            print("here")
+            self.reason = "no change reason"
         super(Blog, self).save(force_insert, force_update, using, update_fields)
+        update_change_reason(self, self.reason)
 
     def delete(self, using=None, keep_parents=False):
         print("Blog model delete method is called.")
@@ -60,6 +68,7 @@ class Issue(models.Model):
     title = models.CharField(max_length=100)
     body = models.TextField()
     user = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.title

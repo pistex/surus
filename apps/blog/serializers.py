@@ -1,8 +1,8 @@
-from django.utils.text import slugify
+from django.contrib import auth
+from rest_framework import exceptions
 from rest_framework import serializers
 from .models import Title, Body, Tag, Blog, Comment
-from apps.user.models import User
-from rest_framework import exceptions
+User = auth.get_user_model()
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -60,23 +60,33 @@ class BlogSerializer(serializers.ModelSerializer):
                 tag = Tag.objects.create(**tag)
                 blog.tag.add(tag)
         return blog
-
+        # super(BlogSerializer, self).create(instance, validated_data) return error repeatly.
     def update(self, instance, validated_data):
         # if not self.context['request'].user.is_authenticated:
         #     raise exceptions.AuthenticationFailed('No user authenticated')
         if self.context['request'].user.id != instance.author.id:
             raise exceptions.PermissionDenied(
                 'You don\'t have permission to modify this post.')
+
         # update title
         if 'title' in validated_data:
             title_data = dict(validated_data.pop('title'))
             title = Title.objects.filter(id=instance.title.id)
             title.update(**title_data)
-        #update body
+            Blog.objects.get(id=instance.id)
+            # A model instance will not update one to one field
+            # ultil it being call agian.
+
+        # update body
         if 'body' in validated_data:
             body_data = dict(validated_data.pop('body'))
             body = Title.objects.filter(id=instance.body.id)
-            body.update(**title_data)
+            body.update(**body_data)
+            Blog.objects.get(id=instance.id)
+            # A model instance will not update one to one field
+            # ultil it being call agian.
+
+        # update tag
         instance.tag.clear()
         if 'tag' in validated_data:
             tag_data = []
@@ -91,7 +101,7 @@ class BlogSerializer(serializers.ModelSerializer):
                     tag = Tag.objects.create(**tag)
                     instance.tag.add(tag)
                     instance.save()
-        return super().update(instance, validated_data)
+        return super(BlogSerializer, self).update(instance, validated_data)
 
 
 class CommentSerializer(serializers.ModelSerializer):
