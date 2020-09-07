@@ -9,8 +9,8 @@
 [X] Implement django-allauth  
 ### blog
 [X] TH/EN title and content
-[X] Slug (Auto generate by title)  
-[X] Edit history  
+[] Slug (Auto generate by title)  
+[] Edit history  
 [X] Tag  
 [X] Issue Report  
 [X] Tooltip  
