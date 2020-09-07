@@ -144,7 +144,8 @@ INSTALLED_APPS += [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook']
-AUTHENTICATION_BACKENDS += ['allauth.account.auth_backends.AuthenticationBackend']
+AUTHENTICATION_BACKENDS += [
+    'allauth.account.auth_backends.AuthenticationBackend']
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SITE_ID = 1
 

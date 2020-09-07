@@ -10,20 +10,24 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = ['en', 'th']
 
+
 class BodySerializer(serializers.ModelSerializer):
     class Meta:
         model = Body
         fields = ['en', 'th']
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['en', 'th']
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'email']
+
 
 class BlogSerializer(serializers.ModelSerializer):
     title = TitleSerializer()
@@ -60,7 +64,8 @@ class BlogSerializer(serializers.ModelSerializer):
                 tag = Tag.objects.create(**tag)
                 blog.tag.add(tag)
         return blog
-        # super(BlogSerializer, self).create(instance, validated_data) return error repeatly.
+        # super(BlogSerializer, self).create(instance, validated_data)
+        # return error repeatly.
 
     def update(self, instance, validated_data):
         if not self.context['request'].user.is_authenticated:
@@ -104,6 +109,7 @@ class BlogSerializer(serializers.ModelSerializer):
                     instance.save()
         return super(BlogSerializer, self).update(instance, validated_data)
 
+
 class CommentSerializer(serializers.ModelSerializer):
     class BlogIdTitle(BlogSerializer):
         class Meta:
@@ -122,7 +128,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        if not "blog_id" in self.context['request'].data:
+        if "blog_id" not in self.context['request'].data:
             raise exceptions.ParseError("No blog_id provied")
         if not self.context['request'].data["blog_id"].isnumeric():
             raise exceptions.ParseError("Invalid blog_id")
@@ -164,7 +170,7 @@ class ReplySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        if not "comment_id" in self.context['request'].data:
+        if "comment_id" not in self.context['request'].data:
             raise exceptions.ParseError("No comment_id provied")
         if not self.context['request'].data["comment_id"].isnumeric():
             raise exceptions.ParseError("Invalid comment_id")

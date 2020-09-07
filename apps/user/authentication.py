@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend as DjangoModelBackend
 UserModel = get_user_model()
 
+
 class ModelBackend(DjangoModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username is None:
@@ -15,9 +16,10 @@ class ModelBackend(DjangoModelBackend):
             # difference between an existing and a nonexistent user (#20760).
             UserModel().set_password(password)
         else:
-            if user.check_password(password) and self.user_can_authenticate(user):
+            if user.check_password(password) and self.user_can_authenticate(
+                    user):
                 return user
-        
+
         # Login by email
         try:
             user = UserModel.objects.get(email=username)
@@ -26,5 +28,6 @@ class ModelBackend(DjangoModelBackend):
             # difference between an existing and a nonexistent user (#20760).
             UserModel().set_password(password)
         else:
-            if user.check_password(password) and self.user_can_authenticate(user):
+            if user.check_password(password) and self.user_can_authenticate(
+                    user):
                 return user

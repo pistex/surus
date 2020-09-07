@@ -1,6 +1,4 @@
-"""
-Create custom user model inheritate from native Django's user model.
-"""
+"""Create custom user model inheritate from native Django's user model."""
 from django.apps import apps
 from django.contrib import auth
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
@@ -17,18 +15,17 @@ class UserManager(BaseUserManager):
     use_in_migrations = True
 
     def _create_user(self, username, email, password, **extra_fields):
-        """
-        Create and save a user with the given username, email, and password.
-        """
+        """Create and save a user with the given username,
+        email, and password."""
         if not username:
             raise ValueError('The given username must be set')
         email = self.normalize_email(email)
         # Lookup the real model class from the global app registry so this
         # manager method can be used in migrations. This is fine because
         # managers are by definition working on the real model.
-        GlobalUserModel = apps.get_model(
+        global_user_model = apps.get_model(
             self.model._meta.app_label, self.model._meta.object_name)
-        username = GlobalUserModel.normalize_username(username)
+        username = global_user_model.normalize_username(username)
         user = self.model(username=username, email=email, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
@@ -39,7 +36,8 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', False)
         return self._create_user(username, email, password, **extra_fields)
 
-    def create_superuser(self, username, email=None, password=None, **extra_fields):
+    def create_superuser(
+            self, username, email=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -50,7 +48,9 @@ class UserManager(BaseUserManager):
 
         return self._create_user(username, email, password, **extra_fields)
 
-    def with_perm(self, perm, is_active=True, include_superusers=True, backend=None, obj=None):
+    def with_perm(
+            self, perm, is_active=True, include_superusers=True, backend=None,
+            obj=None):
         if backend is None:
             backends = auth.get_backends()
             if len(backends) == 1:
@@ -79,10 +79,12 @@ class UserManager(BaseUserManager):
 
 class AbstractUser(AbstractBaseUser, PermissionsMixin):
     """
-    An abstract base class implementing a fully featured User model with
-    admin-compliant permissions.
+    An abstract base class implementing a fully featured User model
+    with admin-compliant permissions.
+
     Username and password are required. Other fields are optional.
     """
+
     username_validator = UnicodeUsernameValidator()
 
     username = models.CharField(
@@ -90,7 +92,8 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         max_length=150,
         unique=True,
         help_text=_(
-            'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+            'Required. 150 characters or fewer.\
+                Letters, digits and @/./+/-/_ only.'),
         validators=[username_validator],
         error_messages={
             'unique': _("A user with that username already exists."),
@@ -113,12 +116,12 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
             'Unselect this instead of deleting accounts.'
         ),
     )
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now, editable=False)
+    date_joined = models.DateTimeField(
+        _('date joined'), default=timezone.now, editable=False)
     last_login = models.DateTimeField(
         _('last login'), blank=True, null=True, editable=False)
     profile_picture = models.ImageField(
         upload_to='profile_pic', default='default_profile_picture.png')
-
 
     objects = UserManager()
 
@@ -137,7 +140,8 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         """
-        Return the first_name plus the last_name, with a space in between.
+        Return the first_name plus the last_name,
+        with a space in between.
         """
         full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
@@ -153,9 +157,11 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
 
 class User(AbstractUser):
     """
-    Users within the Django authentication system are represented by this
-    model.
+    Users within the Django authentication system
+    are represented by this model.
+
     Username and password are required. Other fields are optional.
     """
+
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
