@@ -11,7 +11,7 @@ User = auth.get_user_model()
 class Title(models.Model):
     en = models.CharField(max_length=100)
     th = models.CharField(max_length=100, blank=True)
-    history = HistoricalRecords()
+    history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
         return self.en
@@ -20,7 +20,7 @@ class Title(models.Model):
 class Body(models.Model):
     en = models.TextField()
     th = models.TextField(blank=True)
-    history = HistoricalRecords()
+    history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
         return self.en
@@ -39,12 +39,11 @@ class Blog(models.Model):
     body = models.OneToOneField(Body, on_delete=models.RESTRICT)
     slug = models.SlugField(blank=True, unique=True)
     thumbmail = models.ImageField(default='default_thumbmail.png', blank=True)
-    date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(
         User, default=None, on_delete=models.SET_DEFAULT)
     reason = models.CharField(max_length=100, blank=True)
     tag = models.ManyToManyField(Tag, blank=True, default=None)
-    history = HistoricalRecords()
+    history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
         return str(self.id) + ": " + self.title.en
@@ -52,23 +51,21 @@ class Blog(models.Model):
     def save(
             self, force_insert=False, force_update=False, using=None,
             update_fields=None):
-        print("Save model save method is called.")
         if self.title:
             self.slug = slugify(self.title.en)
         if self.id is None:
             self.reason = "created"
-        print(self.reason == "")
         if self.id is not None:
-            if (self.reason == "created" or "no change reason" or ""):
-                print("here")
+            if self.reason == ("created" or "no change reason" or ""):
                 self.reason = "no change reason"
         super(
             Blog, self).save(
             force_insert, force_update, using, update_fields)
         update_change_reason(self, self.reason)
+        update_change_reason(self.title, self.reason)
+        update_change_reason(self.body, self.reason)
 
     def delete(self, using=None, keep_parents=False):
-        print("Blog model delete method is called.")
         this_title = Title.objects.get(id=self.title.id)
         this_body = Body.objects.get(id=self.body.id)
         super(Blog, self).delete(using, keep_parents)
@@ -81,7 +78,7 @@ class Comment(models.Model):
     blog = models.ForeignKey(Blog, default=None, on_delete=models.CASCADE)
     user = models.ForeignKey(
         User, default=None, null=True, on_delete=models.SET_DEFAULT)
-    history = HistoricalRecords()
+    history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
         return self.user.username\
@@ -95,7 +92,7 @@ class Reply(models.Model):
         Comment, default=None, on_delete=models.SET_DEFAULT)
     user = models.ForeignKey(
         User, default=None, null=True, on_delete=models.SET_DEFAULT)
-    history = HistoricalRecords()
+    history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
         return self.user.username\

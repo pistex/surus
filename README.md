@@ -9,8 +9,8 @@
 [X] Implement django-allauth  
 ### blog
 [X] TH/EN title and content
-[x] Slug (Auto generate by title)  
-[x] Edit history  
+[X] Slug (Auto generate by title)  
+[X] Edit history  
 [X] Tag  
 [X] Issue Report  
 [X] Tooltip  
@@ -22,6 +22,7 @@
 [X] Create CRUD endpoint for reply
 [X] Create CRUD endpoint for issue (no edit allow if is_public)
 [X] Create CRUD endpoint for tooltip (admin only)
-[] Add history query to endpoints
+[x] Add history query to endpoints
 [] Implement dj-rest-auth
 [] Implement RBAC
+[] create admin control panel and user dashboard endpoint

@@ -89,18 +89,16 @@ class BlogSerializer(serializers.ModelSerializer):
             title_data = dict(validated_data.pop('title'))
             title = Title.objects.filter(id=instance.title.id)
             title.update(**title_data)
-            Blog.objects.get(id=instance.id)
-            # A model instance will not update one to one field
-            # ultil it being call agian.
+            title[0].save()
+            instance = Blog.objects.get(id=instance.id)
 
         # update body
         if 'body' in validated_data:
             body_data = dict(validated_data.pop('body'))
-            body = Title.objects.filter(id=instance.body.id)
+            body = Body.objects.filter(id=instance.body.id)
             body.update(**body_data)
-            Blog.objects.get(id=instance.id)
-            # A model instance will not update one to one field
-            # ultil it being call agian.
+            body[0].save()
+            instance = Blog.objects.get(id=instance.id)
 
         # update tag
         instance.tag.clear()
@@ -112,11 +110,9 @@ class BlogSerializer(serializers.ModelSerializer):
                 if Tag.objects.filter(**tag).exists():
                     tag = Tag.objects.filter(**tag)
                     instance.tag.add(tag[0])
-                    instance.save()
                 else:
                     tag = Tag.objects.create(**tag)
                     instance.tag.add(tag)
-                    instance.save()
         return super(BlogSerializer, self).update(instance, validated_data)
 
 
