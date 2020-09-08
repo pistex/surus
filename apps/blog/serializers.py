@@ -1,7 +1,15 @@
 from django.contrib import auth
 from rest_framework import exceptions
 from rest_framework import serializers
-from .models import Title, Body, Tag, Blog, Comment, Reply
+from .models import (
+    Title,
+    Body,
+    Tag,
+    Blog,
+    Comment,
+    Reply,
+    Issue,
+    Tooltip)
 User = auth.get_user_model()
 
 
@@ -43,6 +51,8 @@ class BlogSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if not self.context['request'].user.is_authenticated:
             raise exceptions.AuthenticationFailed('No user authenticated')
+        if self.context['request'].user.id == "1":
+            raise exceptions.PermissionDenied('Only admin allowed to create an article')
         title_data = dict(validated_data.pop('title'))
         body_data = dict(validated_data.pop('body'))
         title = Title.objects.create(**title_data)
@@ -130,7 +140,10 @@ class CommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if "blog_id" not in self.context['request'].data:
             raise exceptions.ParseError("No blog_id provied")
-        if not self.context['request'].data["blog_id"].isnumeric():
+        blog_id = self.context['request'].data["blog_id"]
+        if not isinstance(blog_id, str):
+            raise exceptions.ParseError("blog_id should be input as a string.")
+        if not blog_id.isnumeric():
             raise exceptions.ParseError("Invalid blog_id")
         blog = Blog.objects.get(id=self.context['request'].data['blog_id'])
         if self.context['request'].user.is_authenticated:
@@ -145,10 +158,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         if instance.user is None:
-            raise exceptions.PermissionDenied('This reply cannot be modified')
+            raise exceptions.PermissionDenied('This comment cannot be modified')
         if self.context['request'].user.id != instance.user.id:
             raise exceptions.PermissionDenied(
-                'You don\'t have permission to modify this reply.')
+                'You don\'t have permission to modify this comment.')
         return super().update(instance, validated_data)
 
 
@@ -189,8 +202,72 @@ class ReplySerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if instance.user is None:
             raise exceptions.PermissionDenied(
-                'This comment cannot be modified')
+                'This reply cannot be modified')
         if self.context['request'].user.id != instance.user.id:
             raise exceptions.PermissionDenied(
-                'You don\'t have permission to modify this comment.')
+                'You don\'t have permission to modify this reply.')
         return super().update(instance, validated_data)
+
+
+class IssueSerializer(serializers.ModelSerializer):
+    class BlogIdTitle(BlogSerializer):
+        class Meta:
+            model = Blog
+            fields = ['id', 'title']
+    blog = BlogIdTitle(read_only=True)
+
+    class UserIdUsername(UserSerializer):
+        class Meta:
+            model = User
+            fields = ['id', 'username']
+    user = UserIdUsername(read_only=True)
+
+    class Meta:
+        model = Issue
+        fields = ['title', 'body', 'blog', 'user',
+                  'category', 'is_public', 'is_solved']
+
+    def create(self, validated_data):
+        if not self.context['request'].user.is_authenticated:
+            raise exceptions.AuthenticationFailed('No user authenticated')
+        if "blog_id" not in self.context['request'].data:
+            raise exceptions.ParseError("No blog_id provied")
+        blog_id = self.context['request'].data["blog_id"]
+        if not isinstance(blog_id, str):
+            raise exceptions.ParseError("blog_id should be input as a string.")
+        if not blog_id.isnumeric():
+            raise exceptions.ParseError("Invalid blog_id")
+        blog = Blog.objects.get(id=self.context['request'].data['blog_id'])
+        if self.context['request'].user.is_authenticated:
+            user = User.objects.get(id=self.context['request'].user.id)
+        else:
+            user = None
+        issue = Issue.objects.create(
+            blog=blog,
+            user=user,
+            **validated_data)
+        issue.is_public = False
+        issue.is_solved = False
+        issue.save()
+        return issue
+
+    def update(self, instance, validated_data):
+        if instance.is_public:
+            raise exceptions.PermissionDenied(
+                'Public issue is not editable.')
+        if self.context['request'].user.id != instance.user.id or "1":
+            raise exceptions.PermissionDenied(
+                'You don\'t have permission to modify this issue.')
+        if 'is_public' or 'is_solved' in validated_data\
+                and self.context['request'].user.id != "1":
+            raise exceptions.PermissionDenied(
+                'Only admin can edit is_public and is_solved.')
+        return super().update(instance, validated_data)
+
+
+class TooltipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tooltip
+        fields ='__all__'
+
+    # RBAC is control by controller

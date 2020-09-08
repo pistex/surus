@@ -76,17 +76,6 @@ class Blog(models.Model):
         this_body.delete()
 
 
-class Issue(models.Model):
-    blog = models.ForeignKey(Blog, default=None, on_delete=models.SET_DEFAULT)
-    title = models.CharField(max_length=100)
-    body = models.TextField()
-    user = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
-    history = HistoricalRecords()
-
-    def __str__(self):
-        return self.title
-
-
 class Comment(models.Model):
     body = models.TextField(blank=False)
     blog = models.ForeignKey(Blog, default=None, on_delete=models.CASCADE)
@@ -112,6 +101,25 @@ class Reply(models.Model):
         return self.user.username\
             + ": " + self.body\
             + " in " + self.comment.body
+
+
+class Issue(models.Model):
+    ISSUE_CATEGORY_CHOICE = [
+        ('CODE', 'Code'),
+        ('TYPO', 'Typo'),
+        ('ETC', 'Etc')
+    ]
+    title = models.CharField(max_length=100)
+    body = models.TextField()
+    blog = models.ForeignKey(Blog, default=None, on_delete=models.SET_DEFAULT)
+    user = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
+    category = models.CharField(
+        max_length=10, blank=False, choices=ISSUE_CATEGORY_CHOICE, default='Etc')
+    is_public = models.BooleanField(default=False)
+    is_solved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
 
 
 class Tooltip(models.Model):

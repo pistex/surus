@@ -20,4 +20,8 @@
 [X] Create CRUD endpoint for blog
 [X] Create CRUD endpoint for comment
 [X] Create CRUD endpoint for reply
+[X] Create CRUD endpoint for issue (no edit allow if is_public)
+[X] Create CRUD endpoint for tooltip (admin only)
+[] Add history query to endpoints
 [] Implement dj-rest-auth
+[] Implement RBAC

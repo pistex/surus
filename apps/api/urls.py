@@ -6,6 +6,8 @@ router = routers.DefaultRouter()
 router.register('blog', views.BlogAPIView)
 router.register('comment', views.CommentAPIView)
 router.register('reply', views.ReplyAPIView)
+router.register('issue', views.IssueAPIView)
+router.register('tooltip', views.TooltipAPIView)
 
 urlpatterns = [
     path('', include(router.urls)),
