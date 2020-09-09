@@ -76,16 +76,13 @@ WSGI_APPLICATION = 'surus.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'surus-alpha',
+        'NAME': 'surus',
         'USER': 'postgres',
-        'PASSWORD': 'hAIa5Brfo8b5q3bi',
-        'HOST': '34.87.147.241',
+        'PASSWORD': 'hyFlnNJtjuewracm',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
         'OPTIONS': {
-            'sslmode': 'verify-ca',
-            'sslrootcert': '/home/sbpann/surus/server-ca.pem',
-            "sslcert": "/home/sbpann/surus/client-cert.pem",
-            "sslkey": "/home/sbpann/surus/client-key.pem",
+            'sslmode': 'disable'
         }
     }
 }
@@ -139,11 +136,11 @@ AUTHENTICATION_BACKENDS = ['apps.user.authentication.ModelBackend']
 # django-allauth
 INSTALLED_APPS += [
     'django.contrib.sites',
-
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook']
+    # 'allauth.socialaccount.providers.facebook'
+    ]
 AUTHENTICATION_BACKENDS += [
     'allauth.account.auth_backends.AuthenticationBackend']
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -154,4 +151,19 @@ INSTALLED_APPS += ['simple_history', 'apps.blog.apps.BlogConfig']
 MIDDLEWARE += ['simple_history.middleware.HistoryRequestMiddleware']
 
 # api
-INSTALLED_APPS += ['rest_framework', 'apps.api.apps.ApiConfig']
+INSTALLED_APPS += [
+    'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'apps.api.apps.ApiConfig'
+    ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication'
+    ]
+}
+
+# Debugger
+INSTALLED_APPS += ['apps.debugger.apps.DebuggerConfig']

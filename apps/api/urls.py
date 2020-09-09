@@ -11,5 +11,6 @@ router.register('tooltip', views.TooltipAPIView)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('debugging/', views.debugging)
+    path('auth/', include('dj_rest_auth.urls')),
+    path('auth/reg/', include('dj_rest_auth.registration.urls'))
 ]

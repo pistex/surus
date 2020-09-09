@@ -1,7 +1,4 @@
-import pprint
 import json
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.blog.models import (  # pylint: disable=import-error
@@ -19,13 +16,6 @@ from apps.blog.serializers import ( # pylint: disable=import-error
     ReplySerializer,
     IssueSerializer,
     TooltipSerializer)
-
-
-@csrf_exempt
-def debugging(request):
-    """Declare function based view for debugging."""
-    pprint.pprint(request.POST)
-    return HttpResponse("None")
 
 
 class BlogAPIView(viewsets.ModelViewSet):
