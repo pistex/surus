@@ -1,8 +1,7 @@
 import json
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import viewsets
-from .permissions import IsCreator, IsAuthor
 from apps.blog.models import (  # pylint: disable=import-error
     # pylint fails to locate apps created in subfolder
     Blog,
@@ -18,17 +17,15 @@ from apps.blog.serializers import ( # pylint: disable=import-error
     ReplySerializer,
     IssueSerializer,
     TooltipSerializer)
+from .permissions import IsCreator, IsAuthor, IsOwner, IsNotAnonymousObject
 
-
+create_update_destroy = ['create', 'update', 'partial_update', 'destroy']
+update_destroy = ['update', 'partial_update', 'destroy']
 class BlogAPIView(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
 
     def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        update_destroy = ['update', 'partial_update', 'destroy']
         if self.action == 'create':
             permission_classes = [IsCreator]
         elif self.action in update_destroy:
@@ -36,7 +33,7 @@ class BlogAPIView(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
-    
+
     def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -50,9 +47,17 @@ class BlogAPIView(viewsets.ModelViewSet):
         json_data = json.dumps(serializer.data)[:-1] + ', "history": ' + json_history + '}'
         return Response(json.loads(json_data))
 
+# Anonymous comment cannot be edited, restriced in serializers.py
 class CommentAPIView(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+    def get_permissions(self):
+        if self.action in update_destroy:
+            permission_classes = [IsOwner | IsNotAnonymousObject]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
     def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
         instance = self.get_object()
@@ -74,6 +79,13 @@ class ReplyAPIView(viewsets.ModelViewSet):
     queryset = Reply.objects.all()
     serializer_class = ReplySerializer
 
+    def get_permissions(self):
+        if self.action in update_destroy:
+            permission_classes = [IsOwner | IsNotAnonymousObject]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
     def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -91,10 +103,25 @@ class ReplyAPIView(viewsets.ModelViewSet):
         return Response(json.loads(json_data))
 
 class IssueAPIView(viewsets.ModelViewSet):
-    queryset = Issue.objects.all()
+    queryset = Issue.objects.filter(is_public=True)
     serializer_class = IssueSerializer
 
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [IsAuthenticated]
+        elif self.action in update_destroy:
+            permission_classes = [IsOwner]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
 class TooltipAPIView(viewsets.ModelViewSet):
     queryset = Tooltip.objects.all()
     serializer_class = TooltipSerializer
+
+    def get_permissions(self):
+        if self.action in create_update_destroy:
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]

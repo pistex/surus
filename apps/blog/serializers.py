@@ -49,10 +49,6 @@ class BlogSerializer(serializers.ModelSerializer):
         extra_kwargs = {'tag': {'required': False}}
 
     def create(self, validated_data):
-        if not self.context['request'].user.is_authenticated:
-            raise exceptions.AuthenticationFailed('No user authenticated')
-        if self.context['request'].user.id == "1":
-            raise exceptions.PermissionDenied('Only admin allowed to create an article')
         title_data = dict(validated_data.pop('title'))
         body_data = dict(validated_data.pop('body'))
         title = Title.objects.create(**title_data)
@@ -78,12 +74,6 @@ class BlogSerializer(serializers.ModelSerializer):
         # return error repeatly.
 
     def update(self, instance, validated_data):
-        if not self.context['request'].user.is_authenticated:
-            raise exceptions.AuthenticationFailed('No user authenticated')
-        if self.context['request'].user.id != instance.author.id:
-            raise exceptions.PermissionDenied(
-                'You don\'t have permission to modify this post.')
-
         # update title
         if 'title' in validated_data:
             title_data = dict(validated_data.pop('title'))
@@ -155,9 +145,6 @@ class CommentSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if instance.user is None:
             raise exceptions.PermissionDenied('This comment cannot be modified')
-        if self.context['request'].user.id != instance.user.id:
-            raise exceptions.PermissionDenied(
-                'You don\'t have permission to modify this comment.')
         return super().update(instance, validated_data)
 
 
@@ -199,9 +186,6 @@ class ReplySerializer(serializers.ModelSerializer):
         if instance.user is None:
             raise exceptions.PermissionDenied(
                 'This reply cannot be modified')
-        if self.context['request'].user.id != instance.user.id:
-            raise exceptions.PermissionDenied(
-                'You don\'t have permission to modify this reply.')
         return super().update(instance, validated_data)
 
 
@@ -251,13 +235,6 @@ class IssueSerializer(serializers.ModelSerializer):
         if instance.is_public:
             raise exceptions.PermissionDenied(
                 'Public issue is not editable.')
-        if self.context['request'].user.id != instance.user.id or "1":
-            raise exceptions.PermissionDenied(
-                'You don\'t have permission to modify this issue.')
-        if 'is_public' or 'is_solved' in validated_data\
-                and self.context['request'].user.id != "1":
-            raise exceptions.PermissionDenied(
-                'Only admin can edit is_public and is_solved.')
         return super().update(instance, validated_data)
 
 
@@ -265,5 +242,3 @@ class TooltipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tooltip
         fields ='__all__'
-
-    # RBAC is control by controller

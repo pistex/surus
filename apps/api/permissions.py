@@ -19,3 +19,11 @@ class IsCreator(permissions.BasePermission):
 class IsAuthor(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.author == request.user
+
+class IsOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
+
+class IsNotAnonymousObject(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return not obj.user.is_anonymous
