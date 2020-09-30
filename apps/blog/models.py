@@ -121,7 +121,8 @@ class Issue(models.Model):
 
 class Tooltip(models.Model):
     title = models.CharField(max_length=100)
-    body = models.TextField()
+    en = models.TextField()
+    th = models.TextField()
     tag = models.ManyToManyField(Tag)
 
     def __str__(self):

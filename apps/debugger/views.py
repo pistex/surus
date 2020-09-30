@@ -1,13 +1,26 @@
-import pprint
 from rest_framework import viewsets
-from rest_framework import permissions
+from rest_framework.permissions import AllowAny
+from apps.api.permissions import IsCreator, IsAuthor
 from .models import Debugger
 from .serializers import DebuggerSerializer
 
 class DebuggingAPIView(viewsets.ModelViewSet):
     queryset = Debugger.objects.all()
     serializer_class = DebuggerSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        update_destroy = ['update', 'partial_update', 'destroy']
+        if self.action == 'create':
+            permission_classes = [IsCreator]
+        elif self.action in update_destroy:
+            permission_classes = [IsAuthor]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
     def create(self, request, *args, **kwargs):
         print("create method of debugging endpoint is called")
         return super(DebuggingAPIView, self).create(request, *args, **kwargs)

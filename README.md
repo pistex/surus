@@ -24,5 +24,5 @@
 [X] Create CRUD endpoint for tooltip (admin only)  
 [X] Add history query to endpoints  
 [X] Implement dj-rest-auth  
-[] Implement RBAC  
+[X] Implement RBAC  
 [] create admin control panel and user dashboard endpoint

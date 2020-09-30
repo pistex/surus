@@ -1,13 +1,13 @@
 from rest_framework import routers
 from django.urls import path, include
-from . import views
+from . import blog_views
 
 router = routers.DefaultRouter()
-router.register('blog', views.BlogAPIView)
-router.register('comment', views.CommentAPIView)
-router.register('reply', views.ReplyAPIView)
-router.register('issue', views.IssueAPIView)
-router.register('tooltip', views.TooltipAPIView)
+router.register('blog', blog_views.BlogAPIView)
+router.register('comment', blog_views.CommentAPIView)
+router.register('reply', blog_views.ReplyAPIView)
+router.register('issue', blog_views.IssueAPIView)
+router.register('tooltip', blog_views.TooltipAPIView)
 
 urlpatterns = [
     path('', include(router.urls)),
