@@ -22,7 +22,7 @@
 [X] Create CRUD endpoint for reply  
 [X] Create CRUD endpoint for issue (no edit allow if is_public)  
 [X] Create CRUD endpoint for tooltip (admin only)  
-[x] Add history query to endpoints  
-[] Implement dj-rest-auth  
+[X] Add history query to endpoints  
+[X] Implement dj-rest-auth  
 [] Implement RBAC  
 [] create admin control panel and user dashboard endpoint

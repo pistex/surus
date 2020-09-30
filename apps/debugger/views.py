@@ -1,19 +1,19 @@
 import pprint
 from rest_framework import viewsets
+from rest_framework import permissions
 from .models import Debugger
 from .serializers import DebuggerSerializer
 
 class DebuggingAPIView(viewsets.ModelViewSet):
     queryset = Debugger.objects.all()
     serializer_class = DebuggerSerializer
-
+    permission_classes = [permissions.IsAuthenticated]
     def create(self, request, *args, **kwargs):
         print("create method of debugging endpoint is called")
         return super(DebuggingAPIView, self).create(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
         print("list method of debugging endpoint is called")
-        pprint.pprint(self.request.user.is_authenticated)
         return super(DebuggingAPIView, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):

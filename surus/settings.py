@@ -75,15 +75,8 @@ WSGI_APPLICATION = 'surus.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'surus',
-        'USER': 'postgres',
-        'PASSWORD': 'hyFlnNJtjuewracm',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'disable'
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -140,7 +133,7 @@ INSTALLED_APPS += [
     'allauth.account',
     'allauth.socialaccount',
     # 'allauth.socialaccount.providers.facebook'
-    ]
+]
 AUTHENTICATION_BACKENDS += [
     'allauth.account.auth_backends.AuthenticationBackend']
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -153,17 +146,32 @@ MIDDLEWARE += ['simple_history.middleware.HistoryRequestMiddleware']
 # api
 INSTALLED_APPS += [
     'rest_framework',
+    'apps.api.apps.ApiConfig'
+]
+
+# Debugger
+INSTALLED_APPS += ['apps.debugger.apps.DebuggerConfig']
+
+# CORS
+INSTALLED_APPS += ['corsheaders']
+MIDDLEWARE += [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080"
+]
+
+# dj-rest-auth
+INSTALLED_APPS += [
     'rest_framework.authtoken',
     'dj_rest_auth',
-    'dj_rest_auth.registration',
-    'apps.api.apps.ApiConfig'
-    ]
-
+    'dj_rest_auth.registration'
+]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication'
     ]
 }
-
-# Debugger
-INSTALLED_APPS += ['apps.debugger.apps.DebuggerConfig']
