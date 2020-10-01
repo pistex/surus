@@ -23,7 +23,8 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('', include('apps.api.urls')),
     path('debugger/', include('apps.debugger.urls')),
-    path('dj-rest-auth/', include('dj_rest_auth.urls'))
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

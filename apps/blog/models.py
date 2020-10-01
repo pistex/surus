@@ -40,7 +40,7 @@ class Blog(models.Model):
     slug = models.SlugField(blank=True, unique=True)
     thumbmail = models.ImageField(default='default_thumbmail.png', blank=True)
     author = models.ForeignKey(
-        User, default=None, on_delete=models.SET_DEFAULT)
+        User, default=None, on_delete=models.SET_DEFAULT, null=True)
     reason = models.CharField(max_length=100, blank=True)
     tag = models.ManyToManyField(Tag, blank=True, default=None)
     history = HistoricalRecords(cascade_delete_history=True)
