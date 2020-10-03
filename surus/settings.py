@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -172,6 +173,13 @@ INSTALLED_APPS += [
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication'
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
     ]
+}
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = 'surus-auth'
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=4),
+    'REFRESH_TOKEN_LIFETIME': timedelta(hours=8),
 }
