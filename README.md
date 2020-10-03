@@ -25,4 +25,5 @@
 [X] Add history query to endpoints  
 [X] Implement dj-rest-auth  
 [X] Implement RBAC  
-[] create admin control panel and user dashboard endpoint
+[X] Create admin control panel endpoint  
+[] Create user dashboard endpoint
