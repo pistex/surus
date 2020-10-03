@@ -2,6 +2,7 @@ from rest_framework import routers
 from django.urls import path, include
 from . import blog_views
 from . import admin_views
+from . import profile_views
 
 # Public pages
 router = routers.DefaultRouter()
@@ -13,6 +14,9 @@ router.register('tooltip', blog_views.TooltipAPIView)
 
 # Admin panel
 router.register('rest_admin/group', admin_views.GroupModelController)
+
+#User Profile
+router.register('profile', profile_views.ProfileController)
 
 urlpatterns = [
     # Public pages
