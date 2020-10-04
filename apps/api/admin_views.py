@@ -29,13 +29,13 @@ def all_user(request):
         # Permission controller is not needed here because it is already control by RBAC.
         # for permission in user.user_permissions.all():
         #     permissions.append(permission.name)
-        allauth_email_verification = EmailAddress.objects.filter(
-            email=user.email)
-        verified = None
-        if len(allauth_email_verification) == 0:
-            verified = 'The user does not need verrification.'
-        else:
-            verified = allauth_email_verification[0].verified
+        allauth_email = EmailAddress.objects.filter(
+            user=user)
+        email = []
+        for email_object in allauth_email:
+            data = {'email': email_object.email,
+                    'primary': email_object.primary, 'verified': email_object.verified}
+            email.append(data)
         user_data = {
             'id': user.id,
             # 'profile_picture': user.profile_picture.name,
@@ -43,8 +43,7 @@ def all_user(request):
             # 'password': user.password,
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'email': user.email,
-            'verified': verified,
+            'email': email,
             'groups': groups,
             # 'permission': permissions,
             'is_superuser': user.is_superuser,
@@ -61,7 +60,6 @@ def all_user(request):
 
 @decorators.api_view(['POST'])
 def delete_user(request):
-    print(request.data)
     user_obj = User.objects.get(id=request.data['id'])
     username = user_obj.username
     user_obj.delete()
@@ -77,13 +75,13 @@ def user_detail(request, user_id):
     groups = []
     for group in user.groups.all():
         groups.append(group.name)
-    allauth_email_verification = EmailAddress.objects.filter(
-        email=user.email)
-    verified = None
-    if len(allauth_email_verification) == 0:
-        verified = 'The user does not need verrification.'
-    else:
-        verified = allauth_email_verification[0].verified
+    allauth_email = EmailAddress.objects.filter(
+        user=user)
+    email = []
+    for email_object in allauth_email:
+        data = {'email': email_object.email,
+                'primary': email_object.primary, 'verified': email_object.verified}
+        email.append(data)
     user_data = {
         'id': user.id,
         'profile_picture': user.profile_picture.name,
@@ -91,8 +89,7 @@ def user_detail(request, user_id):
         'password': user.password,
         'first_name': user.first_name,
         'last_name': user.last_name,
-        'email': user.email,
-        'verified': verified,
+        'email': email,
         'groups': groups,
         # 'permission': permissions,
         'is_superuser': user.is_superuser,

@@ -16,7 +16,8 @@ router.register('tooltip', blog_views.TooltipAPIView)
 router.register('rest_admin/group', admin_views.GroupModelController)
 
 #User Profile
-router.register('profile', profile_views.ProfileController)
+router.register('user_profile', profile_views.ProfileController)
+router.register('user_email', profile_views.EmailController)
 
 urlpatterns = [
     # Public pages
@@ -28,5 +29,7 @@ urlpatterns = [
     path('rest_admin/delete_user/', admin_views.delete_user),
     path('rest_admin/user/<int:user_id>', admin_views.user_detail),
     path('rest_admin/user/<int:user_id>/update_groups',
-         admin_views.update_user_groups)
+         admin_views.update_user_groups),
+    path('resend_verification_email/<int:email_id>',
+         profile_views.resend_verification_email)
 ]

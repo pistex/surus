@@ -26,7 +26,7 @@ class IsOwner(permissions.BasePermission):
 
 class IsUser(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return obj.id == request.user.id
+        return obj == request.user
 
 class IsNotAnonymousObject(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
