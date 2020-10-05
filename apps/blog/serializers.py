@@ -16,25 +16,40 @@ User = auth.get_user_model()
 class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
-        fields = ['en', 'th']
+        fields = [
+            'en',
+            'th'
+            ]
 
 
 class BodySerializer(serializers.ModelSerializer):
     class Meta:
         model = Body
-        fields = ['en', 'th']
+        fields = [
+            'en',
+            'th'
+            ]
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['en', 'th']
+        fields = [
+            'en',
+            'th'
+            ]
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email']
+        fields = [
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'email'
+            ]
 
 
 class BlogSerializer(serializers.ModelSerializer):
@@ -46,8 +61,12 @@ class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
         fields = '__all__'
-        extra_kwargs = {'tag': {'required': False}}
 
+    # By default nested serializers are read-only.
+    # If you want to support write-operations to a nested serializer field
+    # you'll need to create create() and / or update() methods
+    # in order to explicitly specify how the child relationships should be saved.
+    # https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers
     def create(self, validated_data):
         title_data = dict(validated_data.pop('title'))
         body_data = dict(validated_data.pop('body'))
@@ -71,7 +90,7 @@ class BlogSerializer(serializers.ModelSerializer):
                 blog.tag.add(tag)
         return blog
         # super(BlogSerializer, self).create(instance, validated_data)
-        # return error repeatly.
+        # return error repeatly becuase drf check if create method is overwritten here.
 
     def update(self, instance, validated_data):
         # update title
@@ -91,7 +110,7 @@ class BlogSerializer(serializers.ModelSerializer):
             instance = Blog.objects.get(id=instance.id)
 
         # update tag
-        instance.tag.clear()
+        instance.tag.clear() # tag is always required.
         if 'tag' in validated_data:
             tag_data = []
             for tag in validated_data.pop('tag'):
@@ -123,15 +142,26 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
 
+    # By default nested serializers are read-only.
+    # If you want to support write-operations to a nested serializer field
+    # you'll need to create create() and / or update() methods
+    # in order to explicitly specify how the child relationships should be saved.
+    # https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers
     def create(self, validated_data):
-        if "blog_id" not in self.context['request'].data:
-            raise exceptions.ParseError("No blog_id provied")
-        blog_id = self.context['request'].data["blog_id"]
-        if not isinstance(blog_id, str):
-            raise exceptions.ParseError("blog_id should be input as a string.")
-        if not blog_id.isnumeric():
-            raise exceptions.ParseError("Invalid blog_id")
-        blog = Blog.objects.get(id=self.context['request'].data['blog_id'])
+        try:
+            blog_id = self.context['request'].data["blog_id"]
+        except:
+            raise exceptions.ParseError("No blog_id provied") from KeyError
+        if not isinstance(blog_id, int):
+            raise exceptions.ParseError(
+                "blog_id should be input as an integer.") from TypeError
+        try:
+            blog = Blog.objects.get(id=self.context['request'].data['blog_id'])
+        except:
+            raise exceptions.NotFound(
+                'The blog with given id does not exist.') from Blog.DoesNotExist
+        
+        # Allow guest comment.
         if self.context['request'].user.is_authenticated:
             user = User.objects.get(id=self.context['request'].user.id)
         else:
@@ -152,13 +182,20 @@ class ReplySerializer(serializers.ModelSerializer):
     class CommentIdBodyBlog(CommentSerializer):
         class Meta:
             model = Comment
-            fields = ['id', 'body', 'blog']
+            fields = [
+                'id',
+                'body',
+                'blog'
+                ]
     comment = CommentIdBodyBlog(read_only=True)
 
     class UserIdUsername(UserSerializer):
         class Meta:
             model = User
-            fields = ['id', 'username']
+            fields = [
+                'id',
+                'username'
+                ]
     user = UserIdUsername(read_only=True)
 
     class Meta:
@@ -166,10 +203,13 @@ class ReplySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        if "comment_id" not in self.context['request'].data:
-            raise exceptions.ParseError("No comment_id provied")
-        if not self.context['request'].data["comment_id"].isnumeric():
-            raise exceptions.ParseError("Invalid comment_id")
+        try:
+            comment_id = self.context['request'].data["comment_id"]
+        except:
+            raise exceptions.ParseError("No comment_id provied") from KeyError
+        if not isinstance(comment_id, int):
+            raise exceptions.ParseError(
+                "comment_id should be input as an integer.") from TypeError
         comment = Comment.objects.get(
             id=self.context['request'].data['comment_id'])
         if self.context['request'].user.is_authenticated:
@@ -193,7 +233,10 @@ class IssueSerializer(serializers.ModelSerializer):
     class BlogIdTitle(BlogSerializer):
         class Meta:
             model = Blog
-            fields = ['id', 'title']
+            fields = [
+                'id',
+                'title'
+                ]
     blog = BlogIdTitle(read_only=True)
 
     class UserIdUsername(UserSerializer):
@@ -204,19 +247,25 @@ class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issue
-        fields = ['title', 'body', 'blog', 'user',
-                  'category', 'is_public', 'is_solved']
+        fields = [
+            'title',
+            'body',
+            'blog',
+            'user',
+            'category',
+            'is_public',
+            'is_solved'
+            ]
 
     def create(self, validated_data):
-        if not self.context['request'].user.is_authenticated:
-            raise exceptions.AuthenticationFailed('No user authenticated')
-        if "blog_id" not in self.context['request'].data:
-            raise exceptions.ParseError("No blog_id provied")
-        blog_id = self.context['request'].data["blog_id"]
-        if not isinstance(blog_id, str):
-            raise exceptions.ParseError("blog_id should be input as a string.")
-        if not blog_id.isnumeric():
-            raise exceptions.ParseError("Invalid blog_id")
+        try:
+            blog_id = self.context['request'].data["blog_id"]
+        except:
+            raise exceptions.ParseError("No blog_id provied") from KeyError
+        if not isinstance(blog_id, int):
+            raise exceptions.ParseError(
+                "blog_id should be input as an integer.") from TypeError
+
         blog = Blog.objects.get(id=self.context['request'].data['blog_id'])
         if self.context['request'].user.is_authenticated:
             user = User.objects.get(id=self.context['request'].user.id)

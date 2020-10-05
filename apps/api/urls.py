@@ -15,7 +15,7 @@ router.register('tooltip', blog_views.TooltipAPIView)
 # Admin panel
 router.register('rest_admin/group', admin_views.GroupModelController)
 
-#User Profile
+# User Profile
 router.register('user_profile', profile_views.ProfileController)
 router.register('user_email', profile_views.EmailController)
 
@@ -24,7 +24,6 @@ urlpatterns = [
     path('', include(router.urls)),
 
     # Admin panel
-    path('rest_admin', admin_views.hello_world),
     path('rest_admin/all_user/', admin_views.all_user),
     path('rest_admin/delete_user/', admin_views.delete_user),
     path('rest_admin/user/<int:user_id>', admin_views.user_detail),

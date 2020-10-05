@@ -1,21 +1,23 @@
 import json
 # import datetime
+from allauth.account.models import EmailAddress
 from django.contrib import auth
 from django.contrib.auth.models import Group
-from rest_framework.permissions import AllowAny, IsAdminUser
-from allauth.account.models import EmailAddress
 from rest_framework import decorators
-from rest_framework import response
 from rest_framework import exceptions
-from rest_framework import viewsets
+from rest_framework import response
 from rest_framework import serializers
+from rest_framework import status
+from rest_framework import viewsets
+from rest_framework.permissions import AllowAny, IsAdminUser
+
 User = auth.get_user_model()
-create_update_destroy = ['create', 'update', 'partial_update', 'destroy']
-
-@decorators.api_view(['GET'])
-def hello_world(request):
-    return response.Response({"message": "Hello, world!"})
-
+create_update_destroy = [
+    'create',
+    'update',
+    'partial_update',
+    'destroy'
+]
 
 @decorators.api_view(['GET'])
 def all_user(request):
@@ -33,21 +35,23 @@ def all_user(request):
             user=user)
         email = []
         for email_object in allauth_email:
-            data = {'email': email_object.email,
-                    'primary': email_object.primary, 'verified': email_object.verified}
+            data = {
+                'email': email_object.email,
+                'primary': email_object.primary,
+                'verified': email_object.verified
+                }
             email.append(data)
         user_data = {
             'id': user.id,
             # 'profile_picture': user.profile_picture.name,
+            # to be retrived in user detail endpiont
             'username': user.username,
-            # 'password': user.password,
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': email,
             'groups': groups,
-            # 'permission': permissions,
             'is_superuser': user.is_superuser,
-            # 'is_staff': user.is_staff,
+            'is_staff': user.is_staff,
             'is_active': user.is_active,
             'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M:%S'),
             'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S')\
@@ -55,7 +59,8 @@ def all_user(request):
         }
         all_users.append(user_data)
     json_string = json.dumps(all_users)
-    return response.Response(json.loads(json_string))
+    return response.Response(json.loads(json_string),
+                             status=status.HTTP_200_OK)
 
 
 @decorators.api_view(['POST'])
@@ -63,7 +68,8 @@ def delete_user(request):
     user_obj = User.objects.get(id=request.data['id'])
     username = user_obj.username
     user_obj.delete()
-    return response.Response({'deleted user': username})
+    return response.Response({'deleted': username},
+                             status=status.HTTP_200_OK)
 
 
 @decorators.api_view(['GET'])
@@ -79,8 +85,11 @@ def user_detail(request, user_id):
         user=user)
     email = []
     for email_object in allauth_email:
-        data = {'email': email_object.email,
-                'primary': email_object.primary, 'verified': email_object.verified}
+        data = {
+            'email': email_object.email,
+            'primary': email_object.primary,
+            'verified': email_object.verified
+            }
         email.append(data)
     user_data = {
         'id': user.id,
@@ -91,15 +100,14 @@ def user_detail(request, user_id):
         'last_name': user.last_name,
         'email': email,
         'groups': groups,
-        # 'permission': permissions,
         'is_superuser': user.is_superuser,
-        # 'is_staff': user.is_staff,
         'is_active': user.is_active,
         'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M:%S'),
         'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else 'never logged in'
     }
     json_string = json.dumps(user_data)
-    return response.Response(json.loads(json_string))
+    return response.Response(json.loads(json_string),
+                             status=status.HTTP_200_OK)
 
 
 @decorators.api_view(['POST'])
@@ -113,8 +121,10 @@ def update_user_groups(request, user_id):
         group_object = Group.objects.get(name=group_name)
         user.groups.add(group_object)
     user.save()
-    return response.Response({"message": "Hello, world!"})
-    
+    return response.Response(
+        {"detail": 'User\'s groups updated.'},
+        status=status.HTTP_200_OK)
+
 class GroupModelController(viewsets.ModelViewSet):
     class Serializer(serializers.ModelSerializer):
         class Meta:

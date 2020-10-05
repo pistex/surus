@@ -19,8 +19,18 @@ from apps.blog.serializers import ( # pylint: disable=import-error
     TooltipSerializer)
 from .permissions import IsCreator, IsAuthor, IsOwner, IsNotAnonymousObject
 
-create_update_destroy = ['create', 'update', 'partial_update', 'destroy']
-update_destroy = ['update', 'partial_update', 'destroy']
+create_update_destroy = [
+    'create',
+    'update',
+    'partial_update',
+    'destroy'
+    ]
+update_destroy = [
+    'update',
+    'partial_update',
+    'destroy'
+    ]
+
 class BlogAPIView(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
@@ -42,9 +52,15 @@ class BlogAPIView(viewsets.ModelViewSet):
         for history in history_data.values():
             history.update(
                 {'history_date': history['history_date'].strftime('%Y-%m-%d %H:%M:%S')})
-            json_history += '"' + history['history_date'] + '": ' + json.dumps(history) + ', '
+            json_history += '"' \
+                + history['history_date'] \
+                + '": ' + json.dumps(history) \
+                + ', '
         json_history = json_history[:-2] + '}'
-        json_data = json.dumps(serializer.data)[:-1] + ', "history": ' + json_history + '}'
+        json_data = json.dumps(serializer.data)[:-1] \
+            + ', "history": ' \
+            + json_history \
+            + '}'
         return Response(json.loads(json_data))
 
 # Anonymous comment cannot be edited, restriced in serializers.py
@@ -68,11 +84,15 @@ class CommentAPIView(viewsets.ModelViewSet):
         for history in history_data.values():
             history.update(
                 {'history_date': history['history_date'].strftime('%Y-%m-%d %H:%M:%S')})
-            json_history += '"' + \
-                history['history_date'] + '": ' + json.dumps(history) + ', '
+            json_history += '"' \
+                + history['history_date'] \
+                + '": ' + json.dumps(history) \
+                + ', '
         json_history = json_history[:-2] + '}'
-        json_data = json.dumps(serializer.data)[
-            :-1] + ', "history": ' + json_history + '}'
+        json_data = json.dumps(serializer.data)[:-1] \
+            + ', "history": ' \
+            + json_history \
+            + '}'
         return Response(json.loads(json_data))
 
 class ReplyAPIView(viewsets.ModelViewSet):
@@ -95,11 +115,16 @@ class ReplyAPIView(viewsets.ModelViewSet):
         for history in history_data.values():
             history.update(
                 {'history_date': history['history_date'].strftime('%Y-%m-%d %H:%M:%S')})
-            json_history += '"' + \
-                history['history_date'] + '": ' + json.dumps(history) + ', '
+            json_history += '"' \
+                + history['history_date'] \
+                + '": ' \
+                + json.dumps(history) \
+                + ', '
         json_history = json_history[:-2] + '}'
-        json_data = json.dumps(serializer.data)[
-            :-1] + ', "history": ' + json_history + '}'
+        json_data = json.dumps(serializer.data)[:-1] \
+            + ', "history": ' \
+            + json_history \
+            + '}'
         return Response(json.loads(json_data))
 
 class IssueAPIView(viewsets.ModelViewSet):
