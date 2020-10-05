@@ -102,11 +102,18 @@ class EmailController(
 
     def create(self, request, *args, **kwargs):
         signals.email_added.send(
-            sender=self.request.user.__class__,
-            request=self.request,
-            user=self.request.user,
-            email_address=request.data.email)
-        return super(EmailController, self).create(request, *args, **kwargs)
+            sender=request.user.__class__,
+            request=request,
+            user=request.user,
+            email_address=request.data["email"])
+        created_email = EmailAddress.objects.add_email(
+            request=request,
+            user=request.user,
+            email=request.data["email"],
+            confirm=True)
+        return response.Response(
+            {'created': created_email.email},
+            status=status.HTTP_201_CREATED)
 
     def partial_update(self, request, *args, **kwargs):
         if "verified" in request.data:
@@ -120,8 +127,7 @@ class EmailController(
                 'This endpoint is for making primary email only')
         try:
             new_primary_email = EmailAddress.objects.get(id=request.data['id'])
-            if not new_primary_email.verified \
-                and EmailAddress.objects.filter(user=request.user, verified=True).exists():
+            if not new_primary_email.verified:
                 raise exceptions.ParseError(
                     'Please verify your email before make it primary')
             try:

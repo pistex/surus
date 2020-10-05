@@ -29,6 +29,6 @@ urlpatterns = [
     path('rest_admin/user/<int:user_id>', admin_views.user_detail),
     path('rest_admin/user/<int:user_id>/update_groups',
          admin_views.update_user_groups),
-    path('resend_verification_email/<int:email_id>',
+    path('resend_verification_email/<int:email_id>/',
          profile_views.resend_verification_email)
 ]

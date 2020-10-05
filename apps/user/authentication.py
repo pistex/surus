@@ -11,7 +11,7 @@ class ModelBackend(DjangoModelBackend):
         if username is None or password is None:
             return
         try:
-            user = UserModel.get_by_natural_key(username)
+            user = UserModel.objects.get(username=username)
         except UserModel.DoesNotExist:
             # Run the default password hasher once to reduce the timing
             # difference between an existing and a nonexistent user (#20760).
