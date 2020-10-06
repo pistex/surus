@@ -11,6 +11,7 @@ from rest_framework import serializers
 from rest_framework import status
 from rest_framework import viewsets
 from .permissions import IsUser
+from .helpers import social_account_check
 
 User = auth.get_user_model()
 create_update_destroy = [
@@ -53,6 +54,10 @@ class ProfileController(
         serializer = self.get_serializer(instance)
         allauth_email = EmailAddress.objects.filter(user=instance)
         email = []
+        social = [
+            {'facebook': social_account_check(instance, 'facebook')},
+            {'google': social_account_check(instance, 'google')}
+            ]
         for email_object in allauth_email:
             data = {
                 'id': email_object.id,
@@ -64,6 +69,8 @@ class ProfileController(
         json_data = json.dumps(serializer.data)[:-1] \
             + ', "email": ' \
             + json.dumps(email) \
+            + ', "social": ' \
+            + json.dumps(social) \
             + '}'
         return response.Response(json.loads(json_data),
                                  status=status.HTTP_200_OK)

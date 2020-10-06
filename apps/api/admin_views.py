@@ -1,6 +1,7 @@
 import json
 # import datetime
 from allauth.account.models import EmailAddress
+from allauth.socialaccount.models import SocialAccount
 from django.contrib import auth
 from django.contrib.auth.models import Group
 from rest_framework import decorators
@@ -10,6 +11,7 @@ from rest_framework import serializers
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAdminUser
+from .helpers import social_account_check
 
 User = auth.get_user_model()
 create_update_destroy = [
@@ -18,6 +20,7 @@ create_update_destroy = [
     'partial_update',
     'destroy'
 ]
+
 
 @decorators.api_view(['GET'])
 def all_user(request):
@@ -39,7 +42,7 @@ def all_user(request):
                 'email': email_object.email,
                 'primary': email_object.primary,
                 'verified': email_object.verified
-                }
+            }
             email.append(data)
         user_data = {
             'id': user.id,
@@ -55,7 +58,7 @@ def all_user(request):
             'is_active': user.is_active,
             'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M:%S'),
             'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S')\
-                if user.last_login else 'never logged in'
+            if user.last_login else 'never logged in'
         }
         all_users.append(user_data)
     json_string = json.dumps(all_users)
@@ -89,7 +92,7 @@ def user_detail(request, user_id):
             'email': email_object.email,
             'primary': email_object.primary,
             'verified': email_object.verified
-            }
+        }
         email.append(data)
     user_data = {
         'id': user.id,
@@ -99,6 +102,10 @@ def user_detail(request, user_id):
         'first_name': user.first_name,
         'last_name': user.last_name,
         'email': email,
+        'social': [
+            {'facebook': social_account_check(user, 'facebook')},
+            {'google': social_account_check(user, 'google')}
+            ],
         'groups': groups,
         'is_superuser': user.is_superuser,
         'is_active': user.is_active,
@@ -124,6 +131,7 @@ def update_user_groups(request, user_id):
     return response.Response(
         {"detail": 'User\'s groups updated.'},
         status=status.HTTP_200_OK)
+
 
 class GroupModelController(viewsets.ModelViewSet):
     class Serializer(serializers.ModelSerializer):

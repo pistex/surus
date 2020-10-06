@@ -3,6 +3,7 @@ from django.urls import path, include
 from . import blog_views
 from . import admin_views
 from . import profile_views
+from . import social_login_views
 
 # Public pages
 router = routers.DefaultRouter()
@@ -30,5 +31,13 @@ urlpatterns = [
     path('rest_admin/user/<int:user_id>/update_groups',
          admin_views.update_user_groups),
     path('resend_verification_email/<int:email_id>/',
-         profile_views.resend_verification_email)
+         profile_views.resend_verification_email),
+
+    # Social Login
+    path('dj-rest-auth/facebook/',
+         social_login_views.FacebookLogin.as_view(),
+         name='facebook_login'),
+    path('dj-rest-auth/google/',
+         social_login_views.GoogleLogin.as_view(),
+         name='google_login')
 ]

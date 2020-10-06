@@ -133,23 +133,28 @@ INSTALLED_APPS += [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.facebook'
-]
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google'
+    ]
 AUTHENTICATION_BACKENDS += [
     'allauth.account.auth_backends.AuthenticationBackend',
-    'dj_rest_auth.jwt_auth.JWTCookieAuthentication']
+    'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
+    ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SITE_ID = 1
 
 # blog app
-INSTALLED_APPS += ['simple_history', 'apps.blog.apps.BlogConfig']
+INSTALLED_APPS += [
+    'simple_history',
+    'apps.blog.apps.BlogConfig'
+    ]
 MIDDLEWARE += ['simple_history.middleware.HistoryRequestMiddleware']
 
 # api
 INSTALLED_APPS += [
     'rest_framework',
     'apps.api.apps.ApiConfig'
-]
+    ]
 
 # Debugger
 INSTALLED_APPS += ['apps.debugger.apps.DebuggerConfig']
@@ -159,28 +164,28 @@ INSTALLED_APPS += ['corsheaders']
 MIDDLEWARE += [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-]
+    ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080"
-]
+    ]
 
 # dj-rest-auth
 INSTALLED_APPS += [
     'rest_framework.authtoken',
     'dj_rest_auth',
     'dj_rest_auth.registration'
-]
+    ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
-    ]
-}
+        ]
+    }
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'surus-auth'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=4),
-    'REFRESH_TOKEN_LIFETIME': timedelta(hours=8),
-}
+    'REFRESH_TOKEN_LIFETIME': timedelta(hours=8)
+    }
