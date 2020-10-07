@@ -35,14 +35,14 @@ class BlogAPIView(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
 
-    def get_permissions(self):
-        if self.action == 'create':
-            permission_classes = [IsCreator]
-        elif self.action in update_destroy:
-            permission_classes = [IsAuthor]
-        else:
-            permission_classes = [AllowAny]
-        return [permission() for permission in permission_classes]
+    # def get_permissions(self):
+    #     if self.action == 'create':
+    #         permission_classes = [IsCreator]
+    #     elif self.action in update_destroy:
+    #         permission_classes = [IsAuthor]
+    #     else:
+    #         permission_classes = [AllowAny]
+    #     return [permission() for permission in permission_classes]
 
     def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
         instance = self.get_object()

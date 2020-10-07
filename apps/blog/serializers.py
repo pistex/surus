@@ -79,6 +79,7 @@ class BlogSerializer(serializers.ModelSerializer):
 
         # Create tag
         tag_data = []
+        print(validated_data)
         for tag in validated_data.pop('tag'):
             tag_data.append(dict(tag))
         for tag in tag_data:
@@ -110,8 +111,8 @@ class BlogSerializer(serializers.ModelSerializer):
             instance = Blog.objects.get(id=instance.id)
 
         # update tag
-        instance.tag.clear() # tag is always required.
         if 'tag' in validated_data:
+            instance.tag.clear()
             tag_data = []
             for tag in validated_data.pop('tag'):
                 tag_data.append(dict(tag))

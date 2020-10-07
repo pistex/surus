@@ -27,7 +27,7 @@ class Body(models.Model):
 
 
 class Tag(models.Model):
-    en = models.CharField(max_length=16, unique=True)
+    en = models.CharField(max_length=16)
     th = models.CharField(max_length=16, blank=True)
 
     def __str__(self):
@@ -38,7 +38,7 @@ class Blog(models.Model):
     title = models.OneToOneField(Title, on_delete=models.RESTRICT)
     body = models.OneToOneField(Body, on_delete=models.RESTRICT)
     slug = models.SlugField(blank=True, unique=True)
-    thumbmail = models.ImageField(default='default_thumbmail.png', blank=True)
+    thumbnail = models.ImageField(default='default_thumbnail.png', blank=True)
     author = models.ForeignKey(
         User, default=None, on_delete=models.SET_DEFAULT, null=True)
     reason = models.CharField(max_length=100, blank=True)

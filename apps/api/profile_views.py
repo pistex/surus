@@ -53,6 +53,9 @@ class ProfileController(
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         allauth_email = EmailAddress.objects.filter(user=instance)
+        groups = []
+        for group in instance.groups.all():
+            groups.append(group.name)
         email = []
         social = [
             {'facebook': social_account_check(instance, 'facebook')},
@@ -69,6 +72,8 @@ class ProfileController(
         json_data = json.dumps(serializer.data)[:-1] \
             + ', "email": ' \
             + json.dumps(email) \
+            + ', "groups": ' \
+            + json.dumps(groups) \
             + ', "social": ' \
             + json.dumps(social) \
             + '}'
