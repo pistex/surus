@@ -9,7 +9,8 @@ from .models import (
     Comment,
     Reply,
     Issue,
-    Tooltip)
+    Tooltip,
+    Image)
 User = auth.get_user_model()
 
 
@@ -34,10 +35,7 @@ class BodySerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = [
-            'en',
-            'th'
-            ]
+        fields = ['text']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -292,3 +290,8 @@ class TooltipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tooltip
         fields ='__all__'
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = '__all__'

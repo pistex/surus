@@ -3,9 +3,30 @@ from django.contrib import auth
 from django.utils.text import slugify
 from simple_history.models import HistoricalRecords
 from simple_history.utils import update_change_reason
-
+from PIL import Image as pillow_image
 
 User = auth.get_user_model()
+
+
+class Image(models.Model):
+    image = models.ImageField(upload_to="blog")
+
+    def save(
+            self,
+            force_insert=False,
+            force_update=False,
+            using=None,
+            update_fields=None):
+        super(Image, self).save(
+            force_insert,
+            force_update,
+            using,
+            update_fields)
+        img = pillow_image.open(self.image.path)
+        if img.width > 1280:
+            new_img = (1280, (img.height / img.width)*1280)
+            img.thumbnail(new_img)
+            img.save(self.image.path)
 
 
 class Title(models.Model):
@@ -27,11 +48,10 @@ class Body(models.Model):
 
 
 class Tag(models.Model):
-    en = models.CharField(max_length=16)
-    th = models.CharField(max_length=16, blank=True)
+    text = models.CharField(max_length=16, blank=False)
 
     def __str__(self):
-        return self.en
+        return self.text
 
 
 class Blog(models.Model):
@@ -49,7 +69,10 @@ class Blog(models.Model):
         return str(self.id) + ": " + self.title.en
 
     def save(
-            self, force_insert=False, force_update=False, using=None,
+            self,
+            force_insert=False,
+            force_update=False,
+            using=None,
             update_fields=None):
         if self.title:
             self.slug = slugify(self.title.en)
@@ -58,9 +81,11 @@ class Blog(models.Model):
         if self.id is not None:
             if self.reason == ("created" or "no change reason" or ""):
                 self.reason = "no change reason"
-        super(
-            Blog, self).save(
-            force_insert, force_update, using, update_fields)
+        super(Blog, self).save(
+            force_insert,
+            force_update,
+            using,
+            update_fields)
         update_change_reason(self, self.reason)
         update_change_reason(self.title, self.reason)
         update_change_reason(self.body, self.reason)
