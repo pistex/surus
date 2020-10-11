@@ -13,6 +13,7 @@ router.register('reply', blog_views.ReplyAPIView)
 router.register('issue', blog_views.IssueAPIView)
 router.register('tooltip', blog_views.TooltipAPIView)
 router.register('image', blog_views.ImageAPIView)
+router.register('tag', blog_views.TagAPIView)
 
 # Admin panel
 router.register('rest_admin/group', admin_views.GroupModelController)

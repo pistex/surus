@@ -10,6 +10,7 @@ User = auth.get_user_model()
 
 class Image(models.Model):
     image = models.ImageField(upload_to="blog")
+    caption = models.CharField(max_length=100, blank=True)
 
     def save(
             self,
@@ -27,7 +28,6 @@ class Image(models.Model):
             new_img = (1280, (img.height / img.width)*1280)
             img.thumbnail(new_img)
             img.save(self.image.path)
-
 
 class Title(models.Model):
     en = models.CharField(max_length=100)
@@ -55,12 +55,27 @@ class Tag(models.Model):
 
 
 class Blog(models.Model):
+    """
+    I found a limit of DRF here.
+    The problem is DRF cannot parse array field (ManyToManyField) uploaded from 'multipart/form-data'.
+    At least not by default. The only way available is to use JSON.
+    And anothor problem come up because a blob cannot be sent by JSON.
+    So I end up use ForeignKey for thumbnail thumbnail field.
+    """
     title = models.OneToOneField(Title, on_delete=models.RESTRICT)
     body = models.OneToOneField(Body, on_delete=models.RESTRICT)
     slug = models.SlugField(blank=True, unique=True)
-    thumbnail = models.ImageField(default='default_thumbnail.png', blank=True)
+
+    thumbnail = models.ForeignKey(
+        Image,
+        default=1,
+        on_delete=models.SET_DEFAULT,
+        null=True)
     author = models.ForeignKey(
-        User, default=None, on_delete=models.SET_DEFAULT, null=True)
+        User,
+        default=None,
+        on_delete=models.SET_DEFAULT,
+        null=True)
     reason = models.CharField(max_length=100, blank=True)
     tag = models.ManyToManyField(Tag, blank=True, default=None)
     history = HistoricalRecords(cascade_delete_history=True)
@@ -76,6 +91,9 @@ class Blog(models.Model):
             update_fields=None):
         if self.title:
             self.slug = slugify(self.title.en)
+        if self.id is None and not self.thumbnail:
+            print(self.thumbnail)
+            self.thumbnail = Image.objects.get(caption='default_thumbnail')
         if self.id is None:
             self.reason = "created"
         if self.id is not None:

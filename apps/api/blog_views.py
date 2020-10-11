@@ -1,7 +1,8 @@
 import json
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from rest_framework.response import Response
+from rest_framework import response
 from rest_framework import viewsets
+from rest_framework import serializers
 from apps.blog.models import (  # pylint: disable=import-error
     # pylint fails to locate apps created in subfolder
     Blog,
@@ -10,7 +11,8 @@ from apps.blog.models import (  # pylint: disable=import-error
     Reply,
     Issue,
     Tooltip,
-    Image)
+    Image,
+    Tag)
 from apps.blog.serializers import (  # pylint: disable=import-error
     # pylint fails to locate apps created in subfolder
     BlogSerializer,
@@ -47,6 +49,8 @@ class BlogAPIView(viewsets.ModelViewSet):
     #         permission_classes = [AllowAny]
     #     return [permission() for permission in permission_classes]
 
+    # def create(self, request, *args, **kwargs):
+    #     print(request.data)
     def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -65,7 +69,7 @@ class BlogAPIView(viewsets.ModelViewSet):
             + ', "history": ' \
             + json_history \
             + '}'
-        return Response(json.loads(json_data))
+        return response.Response(json.loads(json_data))
 
 # Anonymous comment cannot be edited, restriced in serializers.py
 
@@ -99,7 +103,7 @@ class CommentAPIView(viewsets.ModelViewSet):
             + ', "history": ' \
             + json_history \
             + '}'
-        return Response(json.loads(json_data))
+        return response.Response(json.loads(json_data))
 
 
 class ReplyAPIView(viewsets.ModelViewSet):
@@ -132,7 +136,7 @@ class ReplyAPIView(viewsets.ModelViewSet):
             + ', "history": ' \
             + json_history \
             + '}'
-        return Response(json.loads(json_data))
+        return response.Response(json.loads(json_data))
 
 
 class IssueAPIView(viewsets.ModelViewSet):
@@ -164,6 +168,22 @@ class TooltipAPIView(viewsets.ModelViewSet):
 class ImageAPIView(viewsets.ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
+
+    # def get_permissions(self):
+    #     if self.action in create_update_destroy:
+    #         permission_classes = [IsAdminUser]
+    #     else:
+    #         permission_classes = [AllowAny]
+    #     return [permission() for permission in permission_classes]
+
+class TagAPIView(viewsets.ModelViewSet):
+    class TagSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Tag
+            fields = '__all__'
+            read_only_field = ['text']
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
 
     # def get_permissions(self):
     #     if self.action in create_update_destroy:

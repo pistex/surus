@@ -68,16 +68,17 @@ class BlogSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         title_data = dict(validated_data.pop('title'))
         body_data = dict(validated_data.pop('body'))
+        thumbnail = validated_data.pop('thumbnail')
         title = Title.objects.create(**title_data)
         body = Body.objects.create(**body_data)
         blog = Blog.objects.create(
             title=title,
             body=body,
-            author=User.objects.get(id=self.context['request'].user.id))
+            author=User.objects.get(id=self.context['request'].user.id),
+            thumbnail=thumbnail)
 
         # Create tag
         tag_data = []
-        print(validated_data)
         for tag in validated_data.pop('tag'):
             tag_data.append(dict(tag))
         for tag in tag_data:
