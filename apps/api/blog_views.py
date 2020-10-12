@@ -1,4 +1,5 @@
 import json
+import django_filters.rest_framework
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework import response
 from rest_framework import viewsets
@@ -56,6 +57,7 @@ class BlogAPIView(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         history_data = Body.history.model.objects.filter(
             id=serializer.data["id"])
+
         json_history = '{'
         for history in history_data.values():
             history.update(

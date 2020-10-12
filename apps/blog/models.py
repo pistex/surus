@@ -29,6 +29,11 @@ class Image(models.Model):
             img.thumbnail(new_img)
             img.save(self.image.path)
 
+
+def get_default_thumbnail():
+    return Image.objects.get(caption='default_thumbnail')
+
+
 class Title(models.Model):
     en = models.CharField(max_length=100)
     th = models.CharField(max_length=100, blank=True)
@@ -56,8 +61,8 @@ class Tag(models.Model):
 
 class Blog(models.Model):
     """
-    I found a limit of DRF here.
-    The problem is DRF cannot parse array field (ManyToManyField) uploaded from 'multipart/form-data'.
+    I found a limit of DRF here. The problem is DRF cannot parse array field
+    (ManyToManyField) uploaded from 'multipart/form-data'.
     At least not by default. The only way available is to use JSON.
     And anothor problem come up because a blob cannot be sent by JSON.
     So I end up use ForeignKey for thumbnail thumbnail field.
@@ -69,7 +74,7 @@ class Blog(models.Model):
     thumbnail = models.ForeignKey(
         Image,
         default=1,
-        on_delete=models.SET_DEFAULT,
+        on_delete=models.SET(get_default_thumbnail),
         null=True)
     author = models.ForeignKey(
         User,
@@ -93,7 +98,7 @@ class Blog(models.Model):
             self.slug = slugify(self.title.en)
         if self.id is None and not self.thumbnail:
             print(self.thumbnail)
-            self.thumbnail = Image.objects.get(caption='default_thumbnail')
+            self.thumbnail = get_default_thumbnail()
         if self.id is None:
             self.reason = "created"
         if self.id is not None:
@@ -121,7 +126,26 @@ class Comment(models.Model):
     blog = models.ForeignKey(Blog, default=None, on_delete=models.CASCADE)
     user = models.ForeignKey(
         User, default=None, null=True, on_delete=models.SET_DEFAULT)
+    reason = models.CharField(max_length=100, blank=True)
     history = HistoricalRecords(cascade_delete_history=True)
+
+    def save(
+            self,
+            force_insert=False,
+            force_update=False,
+            using=None,
+            update_fields=None):
+        if self.id is None:
+            self.reason = "created"
+        if self.id is not None:
+            if self.reason == ("created" or "no change reason" or ""):
+                self.reason = "no change reason"
+        super(Comment, self).save(
+            force_insert,
+            force_update,
+            using,
+            update_fields)
+        update_change_reason(self, self.reason)
 
     def __str__(self):
         return self.user.username\
@@ -135,12 +159,31 @@ class Reply(models.Model):
         Comment, default=None, on_delete=models.SET_DEFAULT)
     user = models.ForeignKey(
         User, default=None, null=True, on_delete=models.SET_DEFAULT)
+    reason = models.CharField(max_length=100, blank=True)
     history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
         return self.user.username\
             + ": " + self.body\
             + " in " + self.comment.body
+
+    def save(
+            self,
+            force_insert=False,
+            force_update=False,
+            using=None,
+            update_fields=None):
+        if self.id is None:
+            self.reason = "created"
+        if self.id is not None:
+            if self.reason == ("created" or "no change reason" or ""):
+                self.reason = "no change reason"
+        super(Reply, self).save(
+            force_insert,
+            force_update,
+            using,
+            update_fields)
+        update_change_reason(self, self.reason)
 
 
 class Issue(models.Model):
