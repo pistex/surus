@@ -26,7 +26,7 @@ SECRET_KEY = '9jqak**%-3-1vb7p#pjht7!8oaep&5!$@13rh&ivl5^bb2h8ga'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -153,6 +153,7 @@ MIDDLEWARE += ['simple_history.middleware.HistoryRequestMiddleware']
 # api
 INSTALLED_APPS += [
     'rest_framework',
+    'django_filters',
     'apps.api.apps.ApiConfig'
     ]
 
@@ -168,7 +169,9 @@ MIDDLEWARE += [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
-    "http://127.0.0.1:8080"
+    "http://127.0.0.1:8080",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
     ]
 
 # dj-rest-auth
@@ -180,12 +183,13 @@ INSTALLED_APPS += [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
-        ]
+        ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
     }
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'surus-auth'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=4),
-    'REFRESH_TOKEN_LIFETIME': timedelta(hours=8)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     }

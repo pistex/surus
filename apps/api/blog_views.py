@@ -40,7 +40,7 @@ update_destroy = [
 class BlogAPIView(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
-
+    filterset_fields = ['slug']
     # def get_permissions(self):
     #     if self.action == 'create':
     #         permission_classes = [IsCreator]
@@ -177,6 +177,7 @@ class ImageAPIView(viewsets.ModelViewSet):
     #     else:
     #         permission_classes = [AllowAny]
     #     return [permission() for permission in permission_classes]
+
 
 class TagAPIView(viewsets.ModelViewSet):
     class TagSerializer(serializers.ModelSerializer):

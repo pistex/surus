@@ -25,15 +25,15 @@ def password_reset_frontend_redirect(request, uidb64, token):
     return response
 
 urlpatterns = [
-    re_path(r"^dj-rest-auth/password/reset/key/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$",
+    re_path(r"^authentication/password/reset/key/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$",
             password_reset_frontend_redirect,
             name="password_reset_confirm"),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('apps.api.urls')),
     path('debugger/', include('apps.debugger.urls')),
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('authentication/', include('dj_rest_auth.urls')),
+    path('authentication/registration/', include('dj_rest_auth.registration.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
