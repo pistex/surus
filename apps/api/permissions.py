@@ -16,18 +16,22 @@ class IsCreator(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and is_in_group(request.user, "Creator"))
 
+
 class IsAuthor(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.author == request.user
+
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.user == request.user
 
+
 class IsUser(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj == request.user
 
-class IsNotAnonymousObject(permissions.BasePermission):
+
+class IsNotAnonymousObjectOrPerformByAdminOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return not obj.user.is_anonymous
+        return bool(bool(obj.user) or request.user.is_superuser)

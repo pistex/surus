@@ -135,7 +135,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class UserIdUsername(UserSerializer):
         class Meta:
             model = User
-            fields = ['id', 'username']
+            fields = ['id', 'username', 'first_name', 'last_name', 'profile_picture']
     user = UserIdUsername(read_only=True)
 
     class Meta:
@@ -171,11 +171,6 @@ class CommentSerializer(serializers.ModelSerializer):
             user=user,
             **validated_data)
         return comment
-
-    def update(self, instance, validated_data):
-        if instance.user is None:
-            raise exceptions.PermissionDenied('This comment cannot be modified')
-        return super().update(instance, validated_data)
 
 
 class ReplySerializer(serializers.ModelSerializer):
@@ -221,12 +216,6 @@ class ReplySerializer(serializers.ModelSerializer):
             user=user,
             **validated_data)
         return reply
-
-    def update(self, instance, validated_data):
-        if instance.user is None:
-            raise exceptions.PermissionDenied(
-                'This reply cannot be modified')
-        return super().update(instance, validated_data)
 
 
 class IssueSerializer(serializers.ModelSerializer):

@@ -22,7 +22,7 @@ from apps.blog.serializers import (  # pylint: disable=import-error
     IssueSerializer,
     TooltipSerializer,
     ImageSerializer)
-from .permissions import IsCreator, IsAuthor, IsOwner, IsNotAnonymousObject
+from .permissions import IsCreator, IsAuthor, IsOwner, IsNotAnonymousObjectOrPerformByAdminOnly
 
 create_update_destroy = [
     'create',
@@ -41,14 +41,15 @@ class BlogAPIView(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
     filterset_fields = ['slug']
-    # def get_permissions(self):
-    #     if self.action == 'create':
-    #         permission_classes = [IsCreator]
-    #     elif self.action in update_destroy:
-    #         permission_classes = [IsAuthor]
-    #     else:
-    #         permission_classes = [AllowAny]
-    #     return [permission() for permission in permission_classes]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [IsCreator]
+        elif self.action in update_destroy:
+            permission_classes = [IsAuthor]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
     # def create(self, request, *args, **kwargs):
     #     print(request.data)
@@ -73,16 +74,14 @@ class BlogAPIView(viewsets.ModelViewSet):
             + '}'
         return response.Response(json.loads(json_data))
 
-# Anonymous comment cannot be edited, restriced in serializers.py
-
-
 class CommentAPIView(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    filterset_fields = ['blog']
 
     def get_permissions(self):
         if self.action in update_destroy:
-            permission_classes = [IsOwner | IsNotAnonymousObject]
+            permission_classes = [IsOwner | IsNotAnonymousObjectOrPerformByAdminOnly]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
@@ -114,7 +113,7 @@ class ReplyAPIView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in update_destroy:
-            permission_classes = [IsOwner | IsNotAnonymousObject]
+            permission_classes = [IsOwner | IsNotAnonymousObjectOrPerformByAdminOnly]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]

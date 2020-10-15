@@ -23,11 +23,12 @@ class DebuggingAPIView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         print("create method of debugging endpoint is called")
-        print(self.request.data)
         return super(DebuggingAPIView, self).create(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
         print("list method of debugging endpoint is called")
+        print(request.META)
+        print(request.user)
         return super(DebuggingAPIView, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):

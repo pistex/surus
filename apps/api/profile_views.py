@@ -21,10 +21,13 @@ create_update_destroy = [
     'destroy'
     ]
 
+
 def console_debugger(value):
     print(value)
 
+
 class ProfileController(
+    mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet):
@@ -38,36 +41,37 @@ class ProfileController(
                 'first_name',
                 'last_name',
                 'date_joined',
-                'last_login'
+                'last_login',
+                'is_superuser'
                 ]
             read_only_fields = [
                 'id',
                 'date_joined',
-                'last_login'
+                'last_login',
+                'is_superuser'
                 ]
     queryset = User.objects.all()
     serializer_class = Serializer
     # permission_classes = [IsUser]
 
-    def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        allauth_email = EmailAddress.objects.filter(user=instance)
+    def get_profile(self, user_object):
+        serializer = self.get_serializer(user_object)
+        allauth_email = EmailAddress.objects.filter(user=user_object)
         groups = []
-        for group in instance.groups.all():
+        for group in user_object.groups.all():
             groups.append(group.name)
         email = []
         social = [
-            {'facebook': social_account_check(instance, 'facebook')},
-            {'google': social_account_check(instance, 'google')}
-            ]
+            {'facebook': social_account_check(user_object, 'facebook')},
+            {'google': social_account_check(user_object, 'google')}
+        ]
         for email_object in allauth_email:
             data = {
                 'id': email_object.id,
                 'email': email_object.email,
                 'primary': email_object.primary,
                 'verified': email_object.verified
-                }
+            }
             email.append(data)
         json_data = json.dumps(serializer.data)[:-1] \
             + ', "email": ' \
@@ -77,6 +81,20 @@ class ProfileController(
             + ', "social": ' \
             + json.dumps(social) \
             + '}'
+        return json_data
+
+    def list(self, request, *args, **kwargs):
+        # if not request.user.is_authenticated:
+        #     raise exceptions.AuthenticationFailed('Authentiucated user only.')
+        user_id = request.user.id
+        user_object = User.objects.get(id=user_id)
+        json_data = self.get_profile(user_object)
+        return response.Response(json.loads(json_data),
+                                 status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
+        user_object = self.get_object()
+        json_data = self.get_profile(user_object)
         return response.Response(json.loads(json_data),
                                  status=status.HTTP_200_OK)
 
