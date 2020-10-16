@@ -8,27 +8,12 @@ class DebuggingAPIView(viewsets.ModelViewSet):
     queryset = Debugger.objects.all()
     serializer_class = DebuggerSerializer
 
-    # def get_permissions(self):
-    #     """
-    #     Instantiates and returns the list of permissions that this view requires.
-    #     """
-    #     update_destroy = ['update', 'partial_update', 'destroy']
-    #     if self.action == 'create':
-    #         permission_classes = [IsCreator]
-    #     elif self.action in update_destroy:
-    #         permission_classes = [IsAuthor]
-    #     else:
-    #         permission_classes = [AllowAny]
-    #     return [permission() for permission in permission_classes]
-
     def create(self, request, *args, **kwargs):
         print("create method of debugging endpoint is called")
         return super(DebuggingAPIView, self).create(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
         print("list method of debugging endpoint is called")
-        print(request.META)
-        print(request.user)
         return super(DebuggingAPIView, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):

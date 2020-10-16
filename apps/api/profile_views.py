@@ -22,9 +22,6 @@ create_update_destroy = [
     ]
 
 
-def console_debugger(value):
-    print(value)
-
 
 class ProfileController(
     mixins.ListModelMixin,

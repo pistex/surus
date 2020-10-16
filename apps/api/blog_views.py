@@ -51,8 +51,6 @@ class BlogAPIView(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
 
-    # def create(self, request, *args, **kwargs):
-    #     print(request.data)
     def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -110,6 +108,7 @@ class CommentAPIView(viewsets.ModelViewSet):
 class ReplyAPIView(viewsets.ModelViewSet):
     queryset = Reply.objects.all()
     serializer_class = ReplySerializer
+    filterset_fields = ['comment']
 
     def get_permissions(self):
         if self.action in update_destroy:
@@ -121,7 +120,7 @@ class ReplyAPIView(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        history_data = Comment.history.model.objects.filter(
+        history_data = Reply.history.model.objects.filter(
             id=serializer.data["id"])
         json_history = '{'
         for history in history_data.values():

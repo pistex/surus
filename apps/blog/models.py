@@ -97,7 +97,6 @@ class Blog(models.Model):
         if self.title:
             self.slug = slugify(self.title.en)
         if self.id is None and not self.thumbnail:
-            print(self.thumbnail)
             self.thumbnail = get_default_thumbnail()
         if self.id is None:
             self.reason = "created"
@@ -148,7 +147,7 @@ class Comment(models.Model):
         update_change_reason(self, self.reason)
 
     def __str__(self):
-        return self.user.username\
+        return (self.user.username if bool(self.user) else 'Anonymous')\
             + ": " + self.body\
             + " in " + self.blog.title.en
 
@@ -163,7 +162,7 @@ class Reply(models.Model):
     history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
-        return self.user.username\
+        return (self.user.username if bool(self.user) else 'Anonymous')\
             + ": " + self.body\
             + " in " + self.comment.body
 

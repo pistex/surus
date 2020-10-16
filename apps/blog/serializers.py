@@ -179,18 +179,15 @@ class ReplySerializer(serializers.ModelSerializer):
             model = Comment
             fields = [
                 'id',
-                'body',
-                'blog'
+                'body'
                 ]
     comment = CommentIdBodyBlog(read_only=True)
 
     class UserIdUsername(UserSerializer):
         class Meta:
             model = User
-            fields = [
-                'id',
-                'username'
-                ]
+            fields = ['id', 'username', 'first_name',
+                      'last_name', 'profile_picture']
     user = UserIdUsername(read_only=True)
 
     class Meta:
