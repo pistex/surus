@@ -11,7 +11,6 @@ router.register('blog', blog_views.BlogAPIView)
 router.register('comment', blog_views.CommentAPIView)
 router.register('reply', blog_views.ReplyAPIView)
 router.register('issue', blog_views.IssueAPIView)
-router.register('tooltip', blog_views.TooltipAPIView)
 router.register('image', blog_views.ImageAPIView)
 router.register('tag', blog_views.TagAPIView)
 
@@ -29,8 +28,8 @@ urlpatterns = [
     # Admin panel
     path('rest_admin/all_user/', admin_views.all_user),
     path('rest_admin/delete_user/', admin_views.delete_user),
-    path('rest_admin/user/<int:user_id>', admin_views.user_detail),
-    path('rest_admin/user/<int:user_id>/update_groups',
+    path('rest_admin/user/<int:user_id>/', admin_views.user_detail),
+    path('rest_admin/user/<int:user_id>/update_groups/',
          admin_views.update_user_groups),
     path('resend_verification_email/<int:email_id>/',
          profile_views.resend_verification_email),

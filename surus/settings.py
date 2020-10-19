@@ -190,6 +190,6 @@ REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'surus-auth'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=4),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
     }

@@ -11,7 +11,6 @@ from apps.blog.models import (  # pylint: disable=import-error
     Comment,
     Reply,
     Issue,
-    Tooltip,
     Image,
     Tag)
 from apps.blog.serializers import (  # pylint: disable=import-error
@@ -20,7 +19,6 @@ from apps.blog.serializers import (  # pylint: disable=import-error
     CommentSerializer,
     ReplySerializer,
     IssueSerializer,
-    TooltipSerializer,
     ImageSerializer)
 from .permissions import IsCreator, IsAuthor, IsOwner, IsNotAnonymousObjectOrPerformByAdminOnly
 
@@ -148,18 +146,6 @@ class IssueAPIView(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
         elif self.action in update_destroy:
             permission_classes = [IsOwner]
-        else:
-            permission_classes = [AllowAny]
-        return [permission() for permission in permission_classes]
-
-
-class TooltipAPIView(viewsets.ModelViewSet):
-    queryset = Tooltip.objects.all()
-    serializer_class = TooltipSerializer
-
-    def get_permissions(self):
-        if self.action in create_update_destroy:
-            permission_classes = [IsAdminUser]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]

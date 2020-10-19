@@ -98,14 +98,13 @@ def user_detail(request, user_id):
         'id': user.id,
         'profile_picture': user.profile_picture.name,
         'username': user.username,
-        'password': user.password,
         'first_name': user.first_name,
         'last_name': user.last_name,
         'email': email,
-        'social': [
-            {'facebook': social_account_check(user, 'facebook')},
-            {'google': social_account_check(user, 'google')}
-            ],
+        'social': {
+            'facebook': social_account_check(user, 'facebook'),
+            'google': social_account_check(user, 'google')
+        },
         'groups': groups,
         'is_superuser': user.is_superuser,
         'is_active': user.is_active,
@@ -124,6 +123,7 @@ def update_user_groups(request, user_id):
         raise exceptions.ParseError('No user with this id.')
     user = user[0]
     user.groups.clear()
+    print(request.data)
     for group_name in request.data:
         group_object = Group.objects.get(name=group_name)
         user.groups.add(group_object)

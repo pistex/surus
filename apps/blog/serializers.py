@@ -9,7 +9,6 @@ from .models import (
     Comment,
     Reply,
     Issue,
-    Tooltip,
     Image)
 User = auth.get_user_model()
 
@@ -272,11 +271,6 @@ class IssueSerializer(serializers.ModelSerializer):
                 'Public issue is not editable.')
         return super().update(instance, validated_data)
 
-
-class TooltipSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tooltip
-        fields ='__all__'
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:

@@ -83,6 +83,7 @@ class Blog(models.Model):
         null=True)
     reason = models.CharField(max_length=100, blank=True)
     tag = models.ManyToManyField(Tag, blank=True, default=None)
+    is_featured = models.BooleanField(default=False)
     history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
@@ -155,7 +156,7 @@ class Comment(models.Model):
 class Reply(models.Model):
     body = models.TextField()
     comment = models.ForeignKey(
-        Comment, default=None, on_delete=models.SET_DEFAULT)
+        Comment, default=None, null=True, on_delete=models.CASCADE)
     user = models.ForeignKey(
         User, default=None, null=True, on_delete=models.SET_DEFAULT)
     reason = models.CharField(max_length=100, blank=True)
@@ -199,16 +200,6 @@ class Issue(models.Model):
         max_length=10, blank=False, choices=ISSUE_CATEGORY_CHOICE, default='Etc')
     is_public = models.BooleanField(default=False)
     is_solved = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.title
-
-
-class Tooltip(models.Model):
-    title = models.CharField(max_length=100)
-    en = models.TextField()
-    th = models.TextField()
-    tag = models.ManyToManyField(Tag)
 
     def __str__(self):
         return self.title
