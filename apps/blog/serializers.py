@@ -19,7 +19,7 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = [
             'en',
             'th'
-            ]
+        ]
 
 
 class BodySerializer(serializers.ModelSerializer):
@@ -28,7 +28,7 @@ class BodySerializer(serializers.ModelSerializer):
         fields = [
             'en',
             'th'
-            ]
+        ]
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -46,7 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'email'
-            ]
+        ]
 
 
 class BlogSerializer(serializers.ModelSerializer):
@@ -134,7 +134,8 @@ class CommentSerializer(serializers.ModelSerializer):
     class UserIdUsername(UserSerializer):
         class Meta:
             model = User
-            fields = ['id', 'username', 'first_name', 'last_name', 'profile_picture']
+            fields = ['id', 'username', 'first_name',
+                      'last_name', 'profile_picture']
     user = UserIdUsername(read_only=True)
 
     class Meta:
@@ -159,7 +160,7 @@ class CommentSerializer(serializers.ModelSerializer):
         except:
             raise exceptions.NotFound(
                 'The blog with given id does not exist.') from Blog.DoesNotExist
-        
+
         # Allow guest comment.
         if self.context['request'].user.is_authenticated:
             user = User.objects.get(id=self.context['request'].user.id)
@@ -179,7 +180,7 @@ class ReplySerializer(serializers.ModelSerializer):
             fields = [
                 'id',
                 'body'
-                ]
+            ]
     comment = CommentIdBodyBlog(read_only=True)
 
     class UserIdUsername(UserSerializer):
@@ -221,7 +222,7 @@ class IssueSerializer(serializers.ModelSerializer):
             fields = [
                 'id',
                 'title'
-                ]
+            ]
     blog = BlogIdTitle(read_only=True)
 
     class UserIdUsername(UserSerializer):
@@ -233,25 +234,26 @@ class IssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
         fields = [
+            'id',
             'title',
             'body',
             'blog',
             'user',
             'category',
-            'is_public',
+            'is_closed',
             'is_solved'
-            ]
+        ]
+        read_only_fields = ['id']
 
     def create(self, validated_data):
-        try:
+        if 'blog_id' in self.context['request'].data.keys():
             blog_id = self.context['request'].data["blog_id"]
-        except:
-            raise exceptions.ParseError("No blog_id provied") from KeyError
-        if not isinstance(blog_id, int):
-            raise exceptions.ParseError(
-                "blog_id should be input as an integer.") from TypeError
-
-        blog = Blog.objects.get(id=self.context['request'].data['blog_id'])
+            if not isinstance(blog_id, int):
+                raise exceptions.ParseError(
+                    "blog_id should be input as an integer.") from TypeError
+            blog = Blog.objects.get(id=self.context['request'].data['blog_id'])
+        else:
+            blog = None
         if self.context['request'].user.is_authenticated:
             user = User.objects.get(id=self.context['request'].user.id)
         else:
@@ -260,16 +262,10 @@ class IssueSerializer(serializers.ModelSerializer):
             blog=blog,
             user=user,
             **validated_data)
-        issue.is_public = False
+        issue.is_closed = False
         issue.is_solved = False
         issue.save()
         return issue
-
-    def update(self, instance, validated_data):
-        if instance.is_public:
-            raise exceptions.PermissionDenied(
-                'Public issue is not editable.')
-        return super().update(instance, validated_data)
 
 
 class ImageSerializer(serializers.ModelSerializer):

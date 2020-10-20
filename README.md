@@ -13,7 +13,6 @@
 [X] Edit history  
 [X] Tag  
 [X] Issue Report  
-[X] Tooltip  
 [X] Local comment  
 [X] Guest comment  
 ### api
@@ -26,4 +25,4 @@
 [X] Implement dj-rest-auth  
 [X] Implement RBAC  
 [X] Create admin control panel endpoint  
-[] Create user dashboard endpoint
+[X] Create user dashboard endpoint

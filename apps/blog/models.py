@@ -35,8 +35,8 @@ def get_default_thumbnail():
 
 
 class Title(models.Model):
-    en = models.CharField(max_length=100)
-    th = models.CharField(max_length=100, blank=True)
+    en = models.CharField(max_length=200)
+    th = models.CharField(max_length=200, blank=True)
     history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
@@ -189,16 +189,17 @@ class Reply(models.Model):
 class Issue(models.Model):
     ISSUE_CATEGORY_CHOICE = [
         ('CODE', 'Code'),
+        ('SYSTEM', 'System'),
         ('TYPO', 'Typo'),
         ('ETC', 'Etc')
     ]
     title = models.CharField(max_length=100)
     body = models.TextField()
-    blog = models.ForeignKey(Blog, default=None, on_delete=models.SET_DEFAULT)
-    user = models.ForeignKey(User, default=None, on_delete=models.SET_DEFAULT)
+    blog = models.ForeignKey(Blog, default=None, null=True, on_delete=models.SET_DEFAULT)
+    user = models.ForeignKey(User, default=None, null=True, on_delete=models.SET_DEFAULT)
     category = models.CharField(
         max_length=10, blank=False, choices=ISSUE_CATEGORY_CHOICE, default='Etc')
-    is_public = models.BooleanField(default=False)
+    is_closed = models.BooleanField(default=False)
     is_solved = models.BooleanField(default=False)
 
     def __str__(self):

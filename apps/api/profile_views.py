@@ -1,6 +1,6 @@
 import json
 from allauth.account.utils import sync_user_email_addresses
-from allauth.account.models import EmailAddress
+from allauth.account.models import EmailAddress, EmailConfirmationHMAC, EmailConfirmation
 from allauth.account import signals
 from django.contrib import auth
 from rest_framework import decorators
@@ -20,7 +20,6 @@ create_update_destroy = [
     'partial_update',
     'destroy'
     ]
-
 
 
 class ProfileController(
@@ -186,6 +185,17 @@ class EmailController(
         self.perform_destroy(instance)
         return response.Response({'deleted': email},
                                  status=status.HTTP_200_OK)
+
+
+@decorators.api_view(['POST'])
+def confirm_email(request, key):
+    emailconfirmation = EmailConfirmationHMAC.from_key(key)
+    if not emailconfirmation:
+        raise exceptions.NotFound('email not found')
+    emailconfirmation.confirm(request)
+    return response.Response(
+        {"detail": "Email is verified."},
+        status=status.HTTP_200_OK)
 
 
 @decorators.api_view(['POST'])

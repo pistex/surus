@@ -133,15 +133,17 @@ INSTALLED_APPS += [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.google'
+    # 'allauth.socialaccount.providers.facebook',
+    # 'allauth.socialaccount.providers.google'
     ]
 AUTHENTICATION_BACKENDS += [
     'allauth.account.auth_backends.AuthenticationBackend',
     'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
     ]
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SITE_ID = 1
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ACCOUNT_ADAPTER = 'apps.api.adapters.DefaultAccountAdapterCustom'
+FRONTEND_URL = 'http://localhost:3000/'
 
 # blog app
 INSTALLED_APPS += [

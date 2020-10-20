@@ -4,6 +4,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework import response
 from rest_framework import viewsets
 from rest_framework import serializers
+from rest_framework import exceptions
+from rest_framework import status
 from apps.blog.models import (  # pylint: disable=import-error
     # pylint fails to locate apps created in subfolder
     Blog,
@@ -70,6 +72,7 @@ class BlogAPIView(viewsets.ModelViewSet):
             + '}'
         return response.Response(json.loads(json_data))
 
+
 class CommentAPIView(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -77,7 +80,8 @@ class CommentAPIView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in update_destroy:
-            permission_classes = [IsOwner | IsNotAnonymousObjectOrPerformByAdminOnly]
+            permission_classes = [
+                IsOwner | IsNotAnonymousObjectOrPerformByAdminOnly]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
@@ -110,7 +114,8 @@ class ReplyAPIView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in update_destroy:
-            permission_classes = [IsOwner | IsNotAnonymousObjectOrPerformByAdminOnly]
+            permission_classes = [
+                IsOwner | IsNotAnonymousObjectOrPerformByAdminOnly]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
@@ -138,14 +143,12 @@ class ReplyAPIView(viewsets.ModelViewSet):
 
 
 class IssueAPIView(viewsets.ModelViewSet):
-    queryset = Issue.objects.filter(is_public=True)
+    queryset = Issue.objects.all()
     serializer_class = IssueSerializer
 
     def get_permissions(self):
-        if self.action == 'create':
-            permission_classes = [IsAuthenticated]
-        elif self.action in update_destroy:
-            permission_classes = [IsOwner]
+        if self.action in update_destroy:
+            permission_classes = [IsAdminUser]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
@@ -161,6 +164,13 @@ class ImageAPIView(viewsets.ModelViewSet):
     #     else:
     #         permission_classes = [AllowAny]
     #     return [permission() for permission in permission_classes]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.caption == 'default_thumbnail':
+            raise exceptions.ParseError('Default thumbnail cannot belete.')
+        self.perform_destroy(instance)
+        return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TagAPIView(viewsets.ModelViewSet):

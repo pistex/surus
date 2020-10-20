@@ -1,5 +1,5 @@
 from rest_framework import routers
-from django.urls import path, include
+from django.urls import path, include, re_path
 from . import blog_views
 from . import admin_views
 from . import profile_views
@@ -31,14 +31,12 @@ urlpatterns = [
     path('rest_admin/user/<int:user_id>/', admin_views.user_detail),
     path('rest_admin/user/<int:user_id>/update_groups/',
          admin_views.update_user_groups),
-    path('resend_verification_email/<int:email_id>/',
-         profile_views.resend_verification_email),
 
     # Social Login
-    path('dj-rest-auth/facebook/',
+    path('authentication/facebook/',
          social_login_views.FacebookLogin.as_view(),
          name='facebook_login'),
-    path('dj-rest-auth/google/',
+    path('authentication/google/',
          social_login_views.GoogleLogin.as_view(),
          name='google_login')
 ]
