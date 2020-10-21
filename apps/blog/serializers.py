@@ -240,7 +240,6 @@ class IssueSerializer(serializers.ModelSerializer):
             'blog',
             'user',
             'category',
-            'is_closed',
             'is_solved'
         ]
         read_only_fields = ['id']

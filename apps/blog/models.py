@@ -3,31 +3,13 @@ from django.contrib import auth
 from django.utils.text import slugify
 from simple_history.models import HistoricalRecords
 from simple_history.utils import update_change_reason
-from PIL import Image as pillow_image
 
 User = auth.get_user_model()
 
 
 class Image(models.Model):
     image = models.ImageField(upload_to="blog")
-    caption = models.CharField(max_length=100, blank=True)
-
-    def save(
-            self,
-            force_insert=False,
-            force_update=False,
-            using=None,
-            update_fields=None):
-        super(Image, self).save(
-            force_insert,
-            force_update,
-            using,
-            update_fields)
-        img = pillow_image.open(self.image.path)
-        if img.width > 1280:
-            new_img = (1280, (img.height / img.width)*1280)
-            img.thumbnail(new_img)
-            img.save(self.image.path)
+    caption = models.CharField(max_length=200, blank=True)
 
 
 def get_default_thumbnail():
@@ -65,11 +47,11 @@ class Blog(models.Model):
     (ManyToManyField) uploaded from 'multipart/form-data'.
     At least not by default. The only way available is to use JSON.
     And anothor problem come up because a blob cannot be sent by JSON.
-    So I end up use ForeignKey for thumbnail thumbnail field.
+    So I end up use ForeignKey for thumbnail.
     """
     title = models.OneToOneField(Title, on_delete=models.RESTRICT)
     body = models.OneToOneField(Body, on_delete=models.RESTRICT)
-    slug = models.SlugField(blank=True, unique=True)
+    slug = models.SlugField(blank=True, unique=True, max_length=255)
 
     thumbnail = models.ForeignKey(
         Image,
@@ -95,6 +77,7 @@ class Blog(models.Model):
             force_update=False,
             using=None,
             update_fields=None):
+        print(self.reason)
         if self.title:
             self.slug = slugify(self.title.en)
         if self.id is None and not self.thumbnail:
@@ -102,7 +85,7 @@ class Blog(models.Model):
         if self.id is None:
             self.reason = "created"
         if self.id is not None:
-            if self.reason == ("created" or "no change reason" or ""):
+            if self.reason == ("created" or "no change reason" or "" or None):
                 self.reason = "no change reason"
         super(Blog, self).save(
             force_insert,
@@ -193,13 +176,14 @@ class Issue(models.Model):
         ('TYPO', 'Typo'),
         ('ETC', 'Etc')
     ]
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=200)
     body = models.TextField()
-    blog = models.ForeignKey(Blog, default=None, null=True, on_delete=models.SET_DEFAULT)
-    user = models.ForeignKey(User, default=None, null=True, on_delete=models.SET_DEFAULT)
+    blog = models.ForeignKey(
+        Blog, default=None, null=True, on_delete=models.SET_DEFAULT)
+    user = models.ForeignKey(
+        User, default=None, null=True, on_delete=models.SET_DEFAULT)
     category = models.CharField(
-        max_length=10, blank=False, choices=ISSUE_CATEGORY_CHOICE, default='Etc')
-    is_closed = models.BooleanField(default=False)
+        max_length=10, blank=False, choices=ISSUE_CATEGORY_CHOICE, default='ETC')
     is_solved = models.BooleanField(default=False)
 
     def __str__(self):

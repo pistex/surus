@@ -80,8 +80,8 @@ class ProfileController(
         return json_data
 
     def list(self, request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     raise exceptions.AuthenticationFailed('Authentiucated user only.')
+        if not request.user.is_authenticated:
+            raise exceptions.AuthenticationFailed('Authentiucated user only.')
         user_id = request.user.id
         user_object = User.objects.get(id=user_id)
         json_data = self.get_profile(user_object)

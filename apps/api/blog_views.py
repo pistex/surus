@@ -44,9 +44,9 @@ class BlogAPIView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'create':
-            permission_classes = [IsCreator]
+            permission_classes = [IsAdminUser | IsCreator]
         elif self.action in update_destroy:
-            permission_classes = [IsAuthor]
+            permission_classes = [IsAdminUser | IsAuthor]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
@@ -55,8 +55,7 @@ class BlogAPIView(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         history_data = Body.history.model.objects.filter(
-            id=serializer.data["id"])
-
+            id=instance.body.id)
         json_history = '{'
         for history in history_data.values():
             history.update(
@@ -158,12 +157,12 @@ class ImageAPIView(viewsets.ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
 
-    # def get_permissions(self):
-    #     if self.action in create_update_destroy:
-    #         permission_classes = [IsAdminUser]
-    #     else:
-    #         permission_classes = [AllowAny]
-    #     return [permission() for permission in permission_classes]
+    def get_permissions(self):
+        if self.action in create_update_destroy:
+            permission_classes = [IsAdminUser | IsCreator]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -182,9 +181,9 @@ class TagAPIView(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
-    # def get_permissions(self):
-    #     if self.action in create_update_destroy:
-    #         permission_classes = [IsAdminUser]
-    #     else:
-    #         permission_classes = [AllowAny]
-    #     return [permission() for permission in permission_classes]
+    def get_permissions(self):
+        if self.action in create_update_destroy:
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]

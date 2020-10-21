@@ -38,5 +38,11 @@ urlpatterns = [
          name='facebook_login'),
     path('authentication/google/',
          social_login_views.GoogleLogin.as_view(),
+         name='google_login'),
+    path('authentication/facebook/connect/',
+         social_login_views.FacebookConnect.as_view(),
+         name='facebook_login'),
+    path('authentication/google/connect/',
+         social_login_views.GoogleConnect.as_view(),
          name='google_login')
 ]

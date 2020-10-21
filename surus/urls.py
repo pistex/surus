@@ -13,13 +13,12 @@ def password_reset_frontend_redirect(request, uidb64, token):
 
 
 urlpatterns = [
-    re_path(r"^authentication/password/reset/key/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$",
+    re_path(r"^password_reset/(?P<uidb64>[0-9A-Za-z]+)/(?P<token>.+)/$",
             password_reset_frontend_redirect,
             name="password_reset_confirm"),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('apps.api.urls')),
-    path('debugger/', include('apps.debugger.urls')),
     path('authentication/', include('dj_rest_auth.urls')),
     path('authentication/registration/',
          include('dj_rest_auth.registration.urls')),

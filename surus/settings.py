@@ -12,25 +12,16 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+from apps.gcp.secret_manager import get_secret_version
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '9jqak**%-3-1vb7p#pjht7!8oaep&5!$@13rh&ivl5^bb2h8ga'
-
-# SECURITY WARNING: don't run with debug turned on in production!
+SECRET_KEY = get_secret_version(
+    'projects/808537418853/secrets/DJANGO_SECRET_KEY/versions/1')
 DEBUG = True
-
 ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -71,19 +62,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'surus.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': get_secret_version(
+            'projects/808537418853/secrets/POSTGRES_DB/versions/1'),
+        'USER': get_secret_version(
+            'projects/808537418853/secrets/POSTGRES_USER/versions/1'),
+        'PASSWORD': get_secret_version(
+            'projects/808537418853/secrets/POSTGRES_PASSWORD/versions/1'),
+        'HOST': get_secret_version(
+            'projects/808537418853/secrets/POSTGRES_HOST/versions/1'),
+        'PORT': '5432',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -101,12 +93,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
@@ -114,9 +103,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
@@ -133,23 +119,48 @@ INSTALLED_APPS += [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.facebook',
-    # 'allauth.socialaccount.providers.google'
-    ]
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google'
+]
 AUTHENTICATION_BACKENDS += [
     'allauth.account.auth_backends.AuthenticationBackend',
     'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
-    ]
+]
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': get_secret_version(
+                'projects/808537418853/secrets/GOOGLE_CLIENT_ID/versions/1'),
+            'secret': get_secret_version(
+                'projects/808537418853/secrets/GOOGLE_SECRET_KEY/versions/1')
+        }
+    },
+    'facebook': {
+        'APP': {
+            'client_id': get_secret_version(
+                'projects/808537418853/secrets/FACEBOOK_CLIENT_ID/versions/1'),
+            'secret': get_secret_version(
+                'projects/808537418853/secrets/FACEBOOK_SECRET_KEY/versions/1')
+        }
+    }
+}
 SITE_ID = 1
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-ACCOUNT_ADAPTER = 'apps.api.adapters.DefaultAccountAdapterCustom'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'surus.d6101@gmail.com'
+EMAIL_HOST_PASSWORD = get_secret_version(
+    'projects/808537418853/secrets/EMAIL_HOST_PASSWORD/versions/1')
+EMAIL_USE_TLS = True
+ACCOUNT_ADAPTER = 'apps.api.adapters.MyAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'apps.api.adapters.MySocialAccountAdapter'
 FRONTEND_URL = 'http://localhost:3000/'
 
 # blog app
 INSTALLED_APPS += [
     'simple_history',
     'apps.blog.apps.BlogConfig'
-    ]
+]
 MIDDLEWARE += ['simple_history.middleware.HistoryRequestMiddleware']
 
 # api
@@ -157,41 +168,51 @@ INSTALLED_APPS += [
     'rest_framework',
     'django_filters',
     'apps.api.apps.ApiConfig'
-    ]
-
-# Debugger
-INSTALLED_APPS += ['apps.debugger.apps.DebuggerConfig']
+]
 
 # CORS
 INSTALLED_APPS += ['corsheaders']
 MIDDLEWARE += [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    ]
+]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     "http://localhost:3000",
     "http://127.0.0.1:3000"
-    ]
+]
 
 # dj-rest-auth
 INSTALLED_APPS += [
     'rest_framework.authtoken',
     'dj_rest_auth',
     'dj_rest_auth.registration'
-    ]
+]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
-        ],
+    ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
-    }
+}
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'surus-auth'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=4),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
-    }
+}
+
+# Google Cloud
+INSTALLED_APPS += [
+    'apps.gcp'
+]
+# Google Cloud Storage
+DEFAULT_FILE_STORAGE = 'apps.gcp.storage.MediaFile'
+STATICFILES_STORAGE = 'apps.gcp.storage.StaticFile'
+GS_STATIC_FILE_LOCATION = "static/"
+GS_MEDIA_FILE_LOCATION = "file/"
+GS_BUCKET_NAME = 'surus'
+GS_DEFAULT_ACL = 'publicRead'
+GS_CUSTOM_ENDPOINT = 'https://surus.storage.googleapis.com'
