@@ -10,7 +10,7 @@ from rest_framework import response
 from rest_framework import serializers
 from rest_framework import status
 from rest_framework import viewsets
-from .permissions import IsUser
+from .permissions import IsUser, IsOwner
 from .helpers import social_account_check
 
 User = auth.get_user_model()
