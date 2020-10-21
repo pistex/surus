@@ -10,7 +10,7 @@ from rest_framework import response
 from rest_framework import serializers
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import IsAdminUser
 from .helpers import social_account_check
 
 User = auth.get_user_model()
@@ -23,6 +23,7 @@ create_update_destroy = [
 
 
 @decorators.api_view(['GET'])
+@permission_classes([IsAdminUser])
 def all_user(request):
     all_user_objects = User.objects.all()
     all_users = []
@@ -67,6 +68,7 @@ def all_user(request):
 
 
 @decorators.api_view(['POST'])
+@permission_classes([IsAdminUser])
 def delete_user(request):
     user_obj = User.objects.get(id=request.data['id'])
     username = user_obj.username
@@ -76,6 +78,7 @@ def delete_user(request):
 
 
 @decorators.api_view(['GET'])
+@permission_classes([IsAdminUser])
 def user_detail(request, user_id):
     user = User.objects.filter(id=user_id)
     if len(user) == 0:
@@ -117,6 +120,7 @@ def user_detail(request, user_id):
 
 
 @decorators.api_view(['POST'])
+@permission_classes([IsAdminUser])
 def update_user_groups(request, user_id):
     user = User.objects.filter(id=user_id)
     if len(user) == 0:
@@ -141,9 +145,6 @@ class GroupModelController(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = Serializer
 
-    # def get_permissions(self):
-    #     if self.action in create_update_destroy:
-    #         permission_classes = [IsAdminUser]
-    #     else:
-    #         permission_classes = [AllowAny]
-    #     return [permission() for permission in permission_classes]
+    def get_permissions(self):
+        permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]

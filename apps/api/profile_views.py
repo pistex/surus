@@ -48,7 +48,7 @@ class ProfileController(
                 ]
     queryset = User.objects.all()
     serializer_class = Serializer
-    # permission_classes = [IsUser]
+    permission_classes = [IsUser]
 
     def get_profile(self, user_object):
         serializer = self.get_serializer(user_object)
@@ -116,7 +116,7 @@ class EmailController(
                 ]
     queryset = EmailAddress.objects.all()
     serializer_class = Serializer
-    # permission_classes = [IsOwner]
+    permission_classes = [IsOwner]
 
     def dispatch(self, request, *args, **kwargs):
         if request.method == 'PUT':
@@ -199,6 +199,7 @@ def confirm_email(request, key):
 
 
 @decorators.api_view(['POST'])
+@permission_classes([IsOwner])
 def resend_verification_email(request, email_id):
     try:
         email = EmailAddress.objects.get(id=email_id)

@@ -18,7 +18,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = get_secret_version(
     'projects/808537418853/secrets/DJANGO_SECRET_KEY/versions/1')
 DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    get_secret_version('projects/808537418853/secrets/API_BASE_URL/versions/1')
+    ]
 
 
 # Application definition
