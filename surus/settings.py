@@ -19,7 +19,7 @@ SECRET_KEY = get_secret_version(
     'projects/808537418853/secrets/DJANGO_SECRET_KEY/versions/1')
 DEBUG = True
 ALLOWED_HOSTS = [
-    get_secret_version('projects/808537418853/secrets/API_BASE_URL/versions/1')
+    get_secret_version('projects/808537418853/secrets/ALLOWED_HOSTS/versions/1')
     ]
 
 
