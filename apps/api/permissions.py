@@ -9,13 +9,15 @@ def is_in_group(user, group_name):
     try:
         return Group.objects.get(name=group_name).user_set.filter(id=user.id).exists()
     except Group.DoesNotExist:
-        return None
+        return False
 
 
 class IsCreator(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and is_in_group(request.user, "Creator"))
 
+    def has_object_permission(self, request, view, obj):
+        return bool(request.user and is_in_group(request.user, "Creator"))
 
 class IsAuthor(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -34,4 +36,12 @@ class IsUser(permissions.BasePermission):
 
 class IsNotAnonymousObjectOrPerformByAdminOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return bool(bool(obj.user) or request.user.is_superuser)
+        return bool(bool(obj.user) or request.user.is_staff)
+
+class IsAdminUser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_staff)
+
+    def has_object_permission(self, request, view, obj):
+        # to prevent has_object_permission always return true by default
+        return bool(request.user and request.user.is_staff)

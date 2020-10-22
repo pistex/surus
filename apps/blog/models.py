@@ -8,7 +8,7 @@ User = auth.get_user_model()
 
 
 class Image(models.Model):
-    image = models.ImageField(upload_to="blog")
+    image = models.ImageField(upload_to='blog')
     caption = models.CharField(max_length=200, blank=True)
 
 
@@ -69,7 +69,7 @@ class Blog(models.Model):
     history = HistoricalRecords(cascade_delete_history=True)
 
     def __str__(self):
-        return str(self.id) + ": " + self.title.en
+        return str(self.id) + ': ' + self.title.en
 
     def save(
             self,
@@ -77,16 +77,15 @@ class Blog(models.Model):
             force_update=False,
             using=None,
             update_fields=None):
-        print(self.reason)
         if self.title:
             self.slug = slugify(self.title.en)
         if self.id is None and not self.thumbnail:
             self.thumbnail = get_default_thumbnail()
         if self.id is None:
-            self.reason = "created"
+            self.reason = 'created'
         if self.id is not None:
-            if self.reason == ("created" or "no change reason" or "" or None):
-                self.reason = "no change reason"
+            if self.reason == ('created' or 'no change reason' or '' or None):
+                self.reason = 'no change reason'
         super(Blog, self).save(
             force_insert,
             force_update,
@@ -119,10 +118,10 @@ class Comment(models.Model):
             using=None,
             update_fields=None):
         if self.id is None:
-            self.reason = "created"
+            self.reason = 'created'
         if self.id is not None:
-            if self.reason == ("created" or "no change reason" or ""):
-                self.reason = "no change reason"
+            if self.reason == ('created' or 'no change reason' or ''):
+                self.reason = 'no change reason'
         super(Comment, self).save(
             force_insert,
             force_update,
@@ -132,8 +131,8 @@ class Comment(models.Model):
 
     def __str__(self):
         return (self.user.username if bool(self.user) else 'Anonymous')\
-            + ": " + self.body\
-            + " in " + self.blog.title.en
+            + ': ' + self.body\
+            + ' in ' + self.blog.title.en
 
 
 class Reply(models.Model):
@@ -147,8 +146,8 @@ class Reply(models.Model):
 
     def __str__(self):
         return (self.user.username if bool(self.user) else 'Anonymous')\
-            + ": " + self.body\
-            + " in " + self.comment.body
+            + ': ' + self.body\
+            + ' in ' + self.comment.body
 
     def save(
             self,
@@ -157,10 +156,10 @@ class Reply(models.Model):
             using=None,
             update_fields=None):
         if self.id is None:
-            self.reason = "created"
+            self.reason = 'created'
         if self.id is not None:
-            if self.reason == ("created" or "no change reason" or ""):
-                self.reason = "no change reason"
+            if self.reason == ('created' or 'no change reason' or ''):
+                self.reason = 'no change reason'
         super(Reply, self).save(
             force_insert,
             force_update,

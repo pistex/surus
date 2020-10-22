@@ -1,6 +1,6 @@
 import json
 import django_filters.rest_framework
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import response
 from rest_framework import viewsets
 from rest_framework import serializers
@@ -22,7 +22,7 @@ from apps.blog.serializers import (  # pylint: disable=import-error
     ReplySerializer,
     IssueSerializer,
     ImageSerializer)
-from .permissions import IsCreator, IsAuthor, IsOwner, IsNotAnonymousObjectOrPerformByAdminOnly
+from .permissions import IsCreator, IsAuthor, IsOwner, IsNotAnonymousObjectOrPerformByAdminOnly, IsAdminUser
 
 create_update_destroy = [
     'create',
