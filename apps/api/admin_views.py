@@ -23,7 +23,7 @@ create_update_destroy = [
 
 
 @decorators.api_view(['GET'])
-@permission_classes([IsAdminUser])
+@decorators.permission_classes([IsAdminUser])
 def all_user(request):
     all_user_objects = User.objects.all()
     all_users = []
@@ -68,7 +68,7 @@ def all_user(request):
 
 
 @decorators.api_view(['POST'])
-@permission_classes([IsAdminUser])
+@decorators.permission_classes([IsAdminUser])
 def delete_user(request):
     user_obj = User.objects.get(id=request.data['id'])
     username = user_obj.username
@@ -78,7 +78,7 @@ def delete_user(request):
 
 
 @decorators.api_view(['GET'])
-@permission_classes([IsAdminUser])
+@decorators.permission_classes([IsAdminUser])
 def user_detail(request, user_id):
     user = User.objects.filter(id=user_id)
     if len(user) == 0:
@@ -120,7 +120,7 @@ def user_detail(request, user_id):
 
 
 @decorators.api_view(['POST'])
-@permission_classes([IsAdminUser])
+@decorators.permission_classes([IsAdminUser])
 def update_user_groups(request, user_id):
     user = User.objects.filter(id=user_id)
     if len(user) == 0:
