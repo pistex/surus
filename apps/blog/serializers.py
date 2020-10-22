@@ -1,3 +1,6 @@
+import requests
+import json
+from django.conf import settings
 from django.contrib import auth
 from rest_framework import exceptions
 from rest_framework import serializers
@@ -12,6 +15,17 @@ from .models import (
     Image)
 User = auth.get_user_model()
 
+def recaptch_verification(token):
+    try:
+        request_data = {
+            'secret': settings.RECAPTCHA_SERVER_SECRET_KEY,
+            'response': token
+        }
+        response = requests.post(
+            'https://www.google.com/recaptcha/api/siteverify', request_data).text
+    except:
+        return False
+    return json.loads(response)['success']
 
 class TitleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -149,7 +163,7 @@ class CommentSerializer(serializers.ModelSerializer):
     # https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers
     def create(self, validated_data):
         try:
-            blog_id = self.context['request'].data["blog_id"]
+            blog_id = self.context['request'].data['blog_id']
         except:
             raise exceptions.ParseError("No blog_id provied") from KeyError
         if not isinstance(blog_id, int):
@@ -166,6 +180,15 @@ class CommentSerializer(serializers.ModelSerializer):
             user = User.objects.get(id=self.context['request'].user.id)
         else:
             user = None
+        
+        if user == None:
+            try:
+                recaptcha_token = self.context['request'].data['recaptcha']
+            except:
+                raise exceptions.ParseError("No recaptcha_token provied") from KeyError
+            if not recaptch_verification(recaptcha_token):
+                raise exceptions.ParseError("Recaptcha token verification error.") from KeyError
+
         comment = Comment.objects.create(
             blog=blog,
             user=user,
@@ -208,6 +231,15 @@ class ReplySerializer(serializers.ModelSerializer):
             user = User.objects.get(id=self.context['request'].user.id)
         else:
             user = None
+
+        if user == None:
+            try:
+                recaptcha_token = self.context['request'].data['recaptcha']
+            except:
+                raise exceptions.ParseError("No recaptcha_token provied") from KeyError
+            if not recaptch_verification(recaptcha_token):
+                raise exceptions.ParseError("Recaptcha token verification error.") from KeyError
+
         reply = Reply.objects.create(
             comment=comment,
             user=user,
@@ -257,6 +289,15 @@ class IssueSerializer(serializers.ModelSerializer):
             user = User.objects.get(id=self.context['request'].user.id)
         else:
             user = None
+
+        if user == None:
+            try:
+                recaptcha_token = self.context['request'].data['recaptcha']
+            except:
+                raise exceptions.ParseError("No recaptcha_token provied") from KeyError
+            if not recaptch_verification(recaptcha_token):
+                raise exceptions.ParseError("Recaptcha token verification error.") from KeyError
+
         issue = Issue.objects.create(
             blog=blog,
             user=user,

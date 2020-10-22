@@ -36,7 +36,6 @@ update_destroy = [
     'destroy'
 ]
 
-
 class BlogAPIView(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer

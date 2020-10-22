@@ -80,6 +80,7 @@ class ProfileController(
         return json_data
 
     def list(self, request, *args, **kwargs):
+        print('list', request.META)
         if not request.user.is_authenticated:
             raise exceptions.AuthenticationFailed('Authentiucated user only.')
         user_id = request.user.id
@@ -89,6 +90,7 @@ class ProfileController(
                                  status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
+        print('retrieve', request.META)
         user_object = self.get_object()
         json_data = self.get_profile(user_object)
         return response.Response(json.loads(json_data),

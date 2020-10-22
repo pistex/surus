@@ -13,11 +13,11 @@ import os
 from datetime import timedelta
 from pathlib import Path
 from apps.gcp.secret_manager import get_secret_version
-
+from corsheaders.defaults import default_headers
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = get_secret_version(
     'projects/808537418853/secrets/DJANGO_SECRET_KEY/versions/1')
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = [
     get_secret_version('projects/808537418853/secrets/ALLOWED_HOSTS/versions/1')
     ]
@@ -126,7 +126,7 @@ INSTALLED_APPS += [
 ]
 AUTHENTICATION_BACKENDS += [
     'allauth.account.auth_backends.AuthenticationBackend',
-    'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
+    'apps.api.jwt_auth.JWTCookieAuthentication'
 ]
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -185,7 +185,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000"
 ]
-
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'backend-authorization',
+]
 # dj-rest-auth
 INSTALLED_APPS += [
     'rest_framework.authtoken',
@@ -194,9 +196,14 @@ INSTALLED_APPS += [
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
-    ],
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+        'apps.api.jwt_auth.JWTCookieAuthentication'
+        ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+        ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer'
+        ]
 }
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'surus-auth'
@@ -218,3 +225,7 @@ GS_MEDIA_FILE_LOCATION = "file/"
 GS_BUCKET_NAME = 'surus'
 GS_DEFAULT_ACL = 'publicRead'
 GS_CUSTOM_ENDPOINT = 'https://surus.storage.googleapis.com'
+
+# reCAPTCHA secret key
+RECAPTCHA_SERVER_SECRET_KEY = get_secret_version(
+    'projects/808537418853/secrets/RECAPTCHA_SERVER_SECRET_KEY/versions/1')
