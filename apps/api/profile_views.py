@@ -199,7 +199,7 @@ def confirm_email(request, key):
 
 
 @decorators.api_view(['POST'])
-@permission_classes([IsOwner])
+@decorators.permission_classes([IsOwner])
 def resend_verification_email(request, email_id):
     try:
         email = EmailAddress.objects.get(id=email_id)
