@@ -19,14 +19,14 @@ create_update_destroy = [
     'update',
     'partial_update',
     'destroy'
-    ]
+]
 
 
 class ProfileController(
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet):
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+        mixins.UpdateModelMixin,
+        viewsets.GenericViewSet):
     class Serializer(serializers.ModelSerializer):
         class Meta:
             model = User
@@ -39,13 +39,13 @@ class ProfileController(
                 'date_joined',
                 'last_login',
                 'is_superuser'
-                ]
+            ]
             read_only_fields = [
                 'id',
                 'date_joined',
                 'last_login',
                 'is_superuser'
-                ]
+            ]
     queryset = User.objects.all()
     serializer_class = Serializer
     permission_classes = [IsUser]
@@ -53,14 +53,15 @@ class ProfileController(
     def get_profile(self, user_object):
         serializer = self.get_serializer(user_object)
         allauth_email = EmailAddress.objects.filter(user=user_object)
+        password_is_set = user_object.password.startswith('pbkdf2_sha256')
         groups = []
         for group in user_object.groups.all():
             groups.append(group.name)
         email = []
-        social = [
-            {'facebook': social_account_check(user_object, 'facebook')},
-            {'google': social_account_check(user_object, 'google')}
-        ]
+        social = {
+            'facebook': social_account_check(user_object, 'facebook'),
+            'google': social_account_check(user_object, 'google')
+        },
         for email_object in allauth_email:
             data = {
                 'id': email_object.id,
@@ -75,12 +76,13 @@ class ProfileController(
             + ', "groups": ' \
             + json.dumps(groups) \
             + ', "social": ' \
-            + json.dumps(social) \
+            + json.dumps(social)[1:-1] \
+            + ', "password_is_set": ' \
+            + str(password_is_set).lower() \
             + '}'
         return json_data
 
     def list(self, request, *args, **kwargs):
-        print('list', request.META)
         if not request.user.is_authenticated:
             raise exceptions.AuthenticationFailed('Authentiucated user only.')
         user_id = request.user.id
@@ -90,18 +92,26 @@ class ProfileController(
                                  status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):  # pylint: disable=unused-argument # maintain overriding signature
-        print('retrieve', request.META)
         user_object = self.get_object()
         json_data = self.get_profile(user_object)
         return response.Response(json.loads(json_data),
                                  status=status.HTTP_200_OK)
 
+    def partial_update(self, request, *args, **kwargs):
+        user_object = self.get_object()
+        previous_profile_picture_name = user_object.profile_picture.name
+        profile_picture_is_update = 'profile_picture' in request.data
+        if profile_picture_is_update and previous_profile_picture_name != 'default_profile_picture.png':
+            user_object.profile_picture.storage.delete(
+                previous_profile_picture_name)
+        return super(ProfileController, self).partial_update(request, *args, **kwargs)
+
 class EmailController(
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet):
+        mixins.CreateModelMixin,
+        mixins.DestroyModelMixin,
+        mixins.RetrieveModelMixin,
+        mixins.UpdateModelMixin,
+        viewsets.GenericViewSet):
     class Serializer(serializers.ModelSerializer):
         class Meta:
             model = EmailAddress
@@ -110,12 +120,12 @@ class EmailController(
                 'email',
                 'primary',
                 'verified'
-                ]
+            ]
             read_only_fields = [
                 'email',
                 'primary',
                 'verified'
-                ]
+            ]
     queryset = EmailAddress.objects.all()
     serializer_class = Serializer
     permission_classes = [IsOwner]
@@ -146,10 +156,10 @@ class EmailController(
     def partial_update(self, request, *args, **kwargs):
         if "verified" in request.data:
             raise exceptions.ParseError(
-                'Cannot change verification status on this endpint.')
+                'Cannot change verification status on this endpiont.')
         if "email" in request.data:
             raise exceptions.ParseError(
-                'Cannot change email address on this endpint.')
+                'Cannot change email address on this endpiont.')
         if not request.data['primary']:
             raise exceptions.ParseError(
                 'This endpoint is for making primary email only')
@@ -174,7 +184,7 @@ class EmailController(
                       user=request.user,
                       from_email_address=old_primary_email,
                       to_email_address=new_primary_email)
-            return super(EmailController, self).partial_update(request, *args, **kwargs) # pylint: disable=no-member
+            return super(EmailController, self).partial_update(request, *args, **kwargs)  # pylint: disable=no-member
             # PyCQA/pylint issues #2854
         except EmailAddress.DoesNotExist:
             pass
@@ -197,6 +207,28 @@ def confirm_email(request, key):
     emailconfirmation.confirm(request)
     return response.Response(
         {"detail": "Email is verified."},
+        status=status.HTTP_200_OK)
+
+
+@decorators.api_view(['POST'])
+@decorators.permission_classes([IsUser])
+def initialize_password(request):
+    if not request.user.is_authenticated:
+        raise exceptions.AuthenticationFailed('Authentiucated user only.')
+    user = request.user
+    if user.password.startswith('pbkdf2_sha256'):
+        raise exceptions.ParseError('Password is already set.')
+    try:
+        new_password = request.data['new_password']
+        confirm_password = request.data['confirm_password']
+    except:
+        raise exceptions.ParseError('No password provied') from KeyError
+    if new_password != confirm_password:
+        raise exceptions.ParseError('Password confirmation failed.')
+    user.set_password(new_password)
+    user.save()
+    return response.Response(
+        {"detail": "Password is set."},
         status=status.HTTP_200_OK)
 
 

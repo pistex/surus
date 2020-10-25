@@ -127,7 +127,6 @@ def update_user_groups(request, user_id):
         raise exceptions.ParseError('No user with this id.')
     user = user[0]
     user.groups.clear()
-    print(request.data)
     for group_name in request.data:
         group_object = Group.objects.get(name=group_name)
         user.groups.add(group_object)

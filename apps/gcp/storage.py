@@ -7,8 +7,11 @@ from .initialization import gcp_initailize
 
 gcp_initailize()
 
-class StaticFile(GoogleCloudStorage):
-    location = setting('GS_STATIC_FILE_LOCATION', '')
+
+# class StaticFile(GoogleCloudStorage):
+#     location = setting('GS_STATIC_FILE_LOCATION', '')
+# no more static file needed.
+
 
 class MediaFile(GoogleCloudStorage):
     location = setting('GS_MEDIA_FILE_LOCATION', '')
@@ -31,16 +34,16 @@ class MediaFile(GoogleCloudStorage):
             if opened_image.width > 1280:
                 opened_image.thumbnail(
                     (1280, (opened_image.height / opened_image.width) * 1280)
-                    )
+                )
                 new_file_object = io.BytesIO()
-                opened_image.save(new_file_object, format=extention)
+                opened_image.save(new_file_object, format=opened_image.format)
                 content.file = new_file_object
                 content.image = opened_image
                 content.size = len(new_file_object.getbuffer())
         file = GoogleCloudFile(name, 'rw', self)
-        file.blob.cache_control = self.cache_control # pylint: disable=no-member
+        file.blob.cache_control = self.cache_control  # pylint: disable=no-member
         file.blob.upload_from_file(
             content, rewind=True, size=content.size,
-            content_type=file.mime_type, predefined_acl=self.default_acl) # pylint: disable=no-member
+            content_type=file.mime_type, predefined_acl=self.default_acl)  # pylint: disable=no-member
         return cleaned_name
         # cache_control and default_acl are to be initialized

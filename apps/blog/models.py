@@ -11,6 +11,11 @@ class Image(models.Model):
     image = models.ImageField(upload_to='blog')
     caption = models.CharField(max_length=200, blank=True)
 
+    def delete(self, *arg, **kwarg):
+        # todo implement file changed
+        self.image.storage.delete(self.image.name)
+        super(Image, self).delete(*arg, **kwarg)
+
 
 def get_default_thumbnail():
     return Image.objects.get(caption='default_thumbnail')

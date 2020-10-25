@@ -178,7 +178,6 @@ MIDDLEWARE += [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
-
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
@@ -201,9 +200,9 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'
         ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer'
-        ]
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework.renderers.JSONRenderer'
+    #     ]
 }
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'surus-auth'
@@ -218,9 +217,11 @@ INSTALLED_APPS += [
     'apps.gcp'
 ]
 # Google Cloud Storage
+# STATICFILES_STORAGE = 'apps.gcp.storage.StaticFile'
+# no more static file needed.
 DEFAULT_FILE_STORAGE = 'apps.gcp.storage.MediaFile'
-STATICFILES_STORAGE = 'apps.gcp.storage.StaticFile'
-GS_STATIC_FILE_LOCATION = "static/"
+# GS_STATIC_FILE_LOCATION = "static/"
+# no more static file needed.
 GS_MEDIA_FILE_LOCATION = "file/"
 GS_BUCKET_NAME = 'surus'
 GS_DEFAULT_ACL = 'publicRead'

@@ -106,6 +106,10 @@ class BlogSerializer(serializers.ModelSerializer):
         # return error repeatly becuase drf check if create method is overwritten here.
 
     def update(self, instance, validated_data):
+        previous_thumbnail_caption = instance.thumbnail.caption
+        thumbnail_is_update = 'thumbnail' in validated_data
+        if thumbnail_is_update and previous_thumbnail_caption != 'default_thumbnail':
+            instance.thumbnail.delete()
         # update title
         if 'title' in validated_data:
             title_data = dict(validated_data.pop('title'))
