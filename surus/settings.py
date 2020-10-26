@@ -19,6 +19,7 @@ SECRET_KEY = get_secret_version(
     'projects/808537418853/secrets/DJANGO_SECRET_KEY/versions/1')
 DEBUG = False
 ALLOWED_HOSTS = [
+    '*',
     get_secret_version('projects/808537418853/secrets/ALLOWED_HOSTS/versions/2')
     ]
 
@@ -179,7 +180,7 @@ MIDDLEWARE += [
     'django.middleware.common.CommonMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
-    FRONTEND_URL
+    'https://surus-frontend-enj3kcn2iq-as.a.run.app'
 ]
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'backend-authorization',
