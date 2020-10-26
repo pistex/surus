@@ -19,7 +19,7 @@ SECRET_KEY = get_secret_version(
     'projects/808537418853/secrets/DJANGO_SECRET_KEY/versions/1')
 DEBUG = False
 ALLOWED_HOSTS = [
-    get_secret_version('projects/808537418853/secrets/ALLOWED_HOSTS/versions/1')
+    get_secret_version('projects/808537418853/secrets/ALLOWED_HOSTS/versions/2')
     ]
 
 
@@ -156,7 +156,7 @@ EMAIL_HOST_PASSWORD = get_secret_version(
 EMAIL_USE_TLS = True
 ACCOUNT_ADAPTER = 'apps.api.adapters.MyAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'apps.api.adapters.MySocialAccountAdapter'
-FRONTEND_URL = 'http://localhost:3000/'
+FRONTEND_URL = 'https://surus-frontend-enj3kcn2iq-as.a.run.app/'
 
 # blog app
 INSTALLED_APPS += [
@@ -179,10 +179,7 @@ MIDDLEWARE += [
     'django.middleware.common.CommonMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    FRONTEND_URL
 ]
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'backend-authorization',
@@ -200,9 +197,9 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'
         ],
-    # 'DEFAULT_RENDERER_CLASSES': [
-    #     'rest_framework.renderers.JSONRenderer'
-    #     ]
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer'
+        ]
 }
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'surus-auth'

@@ -106,6 +106,7 @@ class ProfileController(
                 previous_profile_picture_name)
         return super(ProfileController, self).partial_update(request, *args, **kwargs)
 
+
 class EmailController(
         mixins.CreateModelMixin,
         mixins.DestroyModelMixin,
