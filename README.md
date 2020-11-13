@@ -1,28 +1,11 @@
-# surus
+# Surus
+Surus is blog engine driven by Django in backend and Nuxt.js on frontend using material UI by Vuetify. The backend and frontend are communicating with REST API. It contains basic feature of blog engine including comment, reply, tag. Anonymous comment, reply features are also implemented with reCAPTCHA. The instantly switch bilingual blog content is implemented (English and Thai by default) by using v-show which means both languages are rendered when the page is load. Rich text editior is implemented using tiptap. Role-Based-Access-Control is implemented on both backend and frontend (please report to me is you see any security hole). Third-party authentication is implemented by Firebase Authentication on frontend and dj-rest-auth on backend.
 
-## Database
-[X] PostgreSQL
-## apps
-### user
-[X] Allow both email and username login  
-[X] Profile picture  
-[X] Implement django-allauth  
-### blog
-[X] TH/EN title and content  
-[X] Slug (Auto generate by title)  
-[X] Edit history  
-[X] Tag  
-[X] Issue Report  
-[X] Local comment  
-[X] Guest comment  
-### api
-[X] Create CRUD endpoint for blog  
-[X] Create CRUD endpoint for comment  
-[X] Create CRUD endpoint for reply  
-[X] Create CRUD endpoint for issue
-[X] Create CRUD endpoint for tooltip (admin only)  
-[X] Add history query to endpoints  
-[X] Implement dj-rest-auth  
-[X] Implement RBAC  
-[X] Create admin control panel endpoint  
-[X] Create user dashboard endpoint
+Surus is named after an elephant in Punic war which was believed to be the last war elephant of Hannibal Barca's army.
+## Basic feature
+- Bilingual blog content
+- Featured article.
+- Social network authentication
+- Role based account.
+- Admin dashboard.
+- Anonymous comment and reply with reCAPTCHA.
