@@ -8,7 +8,7 @@ from apps.api import profile_views
 
 def password_reset_frontend_redirect(request, uidb64, token):
     response = redirect(
-        'http://localhost:8080/password_reset/'+uidb64+'/'+token)
+        'https://surus-frontend-enj3kcn2iq-as.a.run.app/'+uidb64+'/'+token)
     return response
 
 
